@@ -12,8 +12,11 @@ help:	      # This help
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*"
 ############################################################################### Project support
 
-dev:     # run api // http://localhost:3000/api-docs/S
-	@npm run dev
+setJava: # build project
+	@sdk use java 17.0.12-zulu
+
+dev:  # run dev
+	@npx expo start --tunnel
 
 commit:
 	@read -p "Enter commit message: " message; \
