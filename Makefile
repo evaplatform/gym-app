@@ -12,8 +12,13 @@ help:	      # This help
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*"
 ############################################################################### Project support
 
-setJava: # build project
+
+
+setJava: # sdk use java 17.0.12-zulu
 	@sdk use java 17.0.12-zulu
+
+buildAndroid: # it should be ran when you change the native code or install new native dependencies
+	@npx expo run:android
 
 dev:  # run dev
 	@npx expo start --tunnel
