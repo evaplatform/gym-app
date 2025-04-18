@@ -2,9 +2,9 @@ import { useCallback } from 'react';
 import Toast, { ToastProps } from 'react-native-toast-message';
 
 type ApiCallType = {
-    try: (toast: (props: ToastProps) => JSX.Element) => Promise<void>
+    try: (toast: any) => Promise<void>
     catch?: (error: any) => void
-    finally?: () => Promise<void>
+    finally?: () => void
 }
 
 export function useApi() {

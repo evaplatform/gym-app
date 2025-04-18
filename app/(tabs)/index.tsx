@@ -11,34 +11,9 @@ import { HelloWave } from "@/components/HelloWave";
 import ParallaxScrollView from "@/components/ParallaxScrollView";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useState } from "react";
 
-GoogleSignin.configure({
-  scopes: ["profile", "email"],
-  webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
-  iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
-});
 
 export default function HomeScreen() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-
-  const handleGoogleSignIn = async () => {
-    try {
-      const resp = await GoogleSignin.signIn();
-      console.log("Google Sign-In response:", resp);
-      if ((resp as any)?.idToken) {
-        // Here you can send the idToken to your backend for verification
-        // and to create a session for the user.
-        Alert.alert("Success", "You are now signed in with Google!");
-      }
-    } catch (e) {
-      Alert.alert("Error", "An error occurred during Google Sign-In.");
-    } finally {
-      setIsAuthenticated(true);
-    }
-  };
-
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
@@ -87,9 +62,6 @@ export default function HomeScreen() {
           <ThemedText type="defaultSemiBold">app-example</ThemedText>.
         </ThemedText>
       </ThemedView>
-      <TouchableOpacity disabled={isAuthenticated} onPress={handleGoogleSignIn}>
-        <Text>Google</Text>
-      </TouchableOpacity>
     </ParallaxScrollView>
   );
 }
