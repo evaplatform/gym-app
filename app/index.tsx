@@ -4,11 +4,14 @@ import { Image, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useState } from "react";
 import { useApi } from "@/hooks/useApi";
+import axios from "axios";
 
 GoogleSignin.configure({
   scopes: ["profile", "email"],
   webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
   iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
+  offlineAccess: true,
+  forceCodeForRefreshToken: true, // necessário para conseguir refresh token
 });
 
 export default function Page() {
@@ -18,21 +21,33 @@ export default function Page() {
   const handleGoogleSignIn = async () => {
     call({
       try: async (toast) => {
-        const resp = await GoogleSignin.signIn();
-        console.log("Google Sign-In response:", resp);
+        await GoogleSignin.hasPlayServices();
+        const userInfo = await GoogleSignin.signIn();
+        const tokens = await GoogleSignin.getTokens();
 
-        if (resp.data?.idToken) {
-          // Here you can send the idToken to your backend for verification
-          // and to create a session for the user.
-          toast.show({
-            type: "success",
-            text1: "Google Sign-In",
-            text2: "You are now signed in with Google!",
-          });
-          setIsAuthenticated(true);
-        }
+        console.log("User Info:", userInfo);
+        console.log("Tokens:", tokens);
+
+        const { idToken, accessToken } = tokens;
+        const authCode = userInfo?.data?.serverAuthCode;
+
+        // await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
+        //   idToken,
+        //   accessToken,
+        //   authCode,
+        // });
+
+        toast.show({
+          type: "success",
+          text1: "Google Sign-In",
+          text2: "You are now signed in with Google!",
+        });
+        setIsAuthenticated(true);
       },
-      catch: () => setIsAuthenticated(false),
+      catch: (err) => {
+        console.error("Sign-In Error:", err);
+        setIsAuthenticated(false);
+      },
     });
   };
 
@@ -65,3 +80,13 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
 });
+
+
+/*
+await axios.get(`${API_URL}/user/profile`, {
+  headers: {
+    Authorization: `Bearer ${accessToken}`,
+    ' ': refreshToken, // opcional, usado se o accessToken expirar
+  },
+});
+*/
