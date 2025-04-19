@@ -4,7 +4,8 @@ import { Image, StyleSheet, TouchableOpacity, Text } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useState } from "react";
 import { useApi } from "@/hooks/useApi";
-import axios from "axios";
+import { LoginServices } from "@/services/LoginServices";
+import { ISigninCreateReq } from "@/services/LoginServices/types";
 
 GoogleSignin.configure({
   scopes: ["profile", "email"],
@@ -25,17 +26,19 @@ export default function Page() {
         const userInfo = await GoogleSignin.signIn();
         const tokens = await GoogleSignin.getTokens();
 
-        console.log("User Info:", userInfo);
-        console.log("Tokens:", tokens);
-
         const { idToken, accessToken } = tokens;
         const authCode = userInfo?.data?.serverAuthCode;
 
-        // await axios.post(`${process.env.EXPO_PUBLIC_API_URL}/auth/google`, {
-        //   idToken,
-        //   accessToken,
-        //   authCode,
-        // });
+        if (!authCode) {
+          throw new Error("authCode is undefined");
+        }
+
+        const requestBody: ISigninCreateReq = {
+          token: idToken,
+          authCode,
+        };
+
+        await LoginServices.createOrLogin(requestBody);
 
         toast.show({
           type: "success",
@@ -81,12 +84,11 @@ const styles = StyleSheet.create({
   },
 });
 
-
 /*
-await axios.get(`${API_URL}/user/profile`, {
-  headers: {
-    Authorization: `Bearer ${accessToken}`,
-    ' ': refreshToken, // opcional, usado se o accessToken expirar
-  },
-});
-*/
+  await axios.get(`${API_URL}/user/profile`, {
+    headers: {
+      Authorization: `Bearer ${accessToken}`,
+      ' ': refreshToken, // opcional, usado se o accessToken expirar
+    },
+  });
+  */
