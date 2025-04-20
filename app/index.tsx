@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import { ImageBackground, StyleSheet, Text, View } from "react-native";
 const backgroundImg = require("@assets/images/background.jpg");
+const logoImg = require("@assets/images/google-logo.png");
 
 export default function App() {
   return (
@@ -10,7 +11,7 @@ export default function App() {
       style={styles.background}
     >
       <View style={styles.content}>
-        <Button title="Acessar" />
+        <Button title="Acessar com Google" transparent imageSource={logoImg} />
       </View>
     </ImageBackground>
   );
@@ -22,10 +23,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     zIndex: 2,
+    padding: 20
   },
   content: {
     flex: 1,
-    justifyContent: "flex-end", 
+    width: "100%",
+    justifyContent: "center",
   },
   text: {
     color: "white",
