@@ -1,4 +1,6 @@
 import { AUTH_STORAGE_KEY } from "@/constants/storeKeys";
+import { api } from "@/services/api";
+import { ISigninCreateRes } from "@/services/LoginServices/types";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SplashScreen, useRouter } from "expo-router";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
@@ -8,7 +10,7 @@ SplashScreen.preventAutoHideAsync();
 type AuthState = {
   isLoggedIn: boolean;
   isReady: boolean;
-  logIn: () => void;
+  logIn: (data: ISigninCreateRes) => void;
   logOut: () => void;
 };
 
@@ -35,15 +37,23 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-  const logIn = () => {
+  const logIn = (data: ISigninCreateRes) => {
     setIsLoggedIn(true);
     storeAuthState({ isLoggedIn: true });
+
+    api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+    api.defaults.headers.common["x-refresh-token"] = data.googleTokens.refresh_token;
+
     router.replace("/");
   };
 
   const logOut = () => {
     setIsLoggedIn(false);
     storeAuthState({ isLoggedIn: false });
+
+    delete api.defaults.headers.common["Authorization"];
+    delete api.defaults.headers.common["x-refresh-token"];
+
     router.replace("/login");
   };
 
