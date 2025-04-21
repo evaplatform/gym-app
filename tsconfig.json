@@ -9,8 +9,8 @@
       "@assets/*": [
         "./assets/*"
       ],
-      "@store/*": [
-        "./store/*"
+      "@redux/*": [
+        "./redux/*"
       ],
     }
   },

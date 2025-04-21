@@ -1,10 +1,15 @@
 import { useState } from "react";
+import { router } from 'expo-router';
 import { Button } from "@/components/ui/Button";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useApi } from "@/hooks/useApi";
 import { LoginServices } from "@/services/LoginServices";
 import { ISigninCreateReq } from "@/services/LoginServices/types";
+import { assembleUser } from "@/shared/utils/assembleUser";
+import { useDispatch } from "react-redux";
+import { setUser } from "@/redux/slices/userSlice";
+import { saveUserToStorage } from "@/store/userStore";
 
 const backgroundImg = require("@assets/images/background.jpg");
 const logoImg = require("@assets/images/google-logo.png");
@@ -19,6 +24,7 @@ GoogleSignin.configure({
 
 export default function App() {
   const { call } = useApi();
+  const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
 
   const handleGoogleSignIn = async () => {
@@ -41,14 +47,26 @@ export default function App() {
           email: userInfo.data?.user.email,
         };
 
-        await LoginServices.createOrLogin(requestBody);
+        const resp = await LoginServices.createOrLogin(requestBody);
+
+        const apiUser = assembleUser(resp);
+
+        console.log("API User:", apiUser);
+        console.log("resp:", resp);
+
+        if (apiUser) {
+          dispatch(setUser(apiUser));
+          saveUserToStorage(resp);
+        }
 
         toast.show({
           type: "success",
           text1: "Google Sign-In",
           text2: "You are now signed in with Google!",
         });
+
         setIsAuthenticated(true);
+        router.replace('/');
       },
       catch: (err) => {
         console.error("Sign-In Error:", err);
