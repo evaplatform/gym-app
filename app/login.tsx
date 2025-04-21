@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { router } from 'expo-router';
+import { useContext, useState } from "react";
+import { router } from "expo-router";
 import { Button } from "@/components/ui/Button";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
@@ -10,6 +10,7 @@ import { assembleUser } from "@/shared/utils/assembleUser";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/slices/userSlice";
 import { saveUserToStorage } from "@/store/userStore";
+import { AuthContext } from "@/contexts/authContext";
 
 const backgroundImg = require("@assets/images/background.jpg");
 const logoImg = require("@assets/images/google-logo.png");
@@ -22,7 +23,8 @@ GoogleSignin.configure({
   forceCodeForRefreshToken: true, // necessário para conseguir refresh token
 });
 
-export default function App() {
+export default function Login() {
+  const authContext = useContext(AuthContext);
   const { call } = useApi();
   const dispatch = useDispatch();
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -66,7 +68,7 @@ export default function App() {
         });
 
         setIsAuthenticated(true);
-        router.replace('/');
+        router.replace("/");
       },
       catch: (err) => {
         console.error("Sign-In Error:", err);
@@ -86,7 +88,7 @@ export default function App() {
           title="Acessar com Google"
           transparent
           imageSource={logoImg}
-          onPress={handleGoogleSignIn}
+          onPress={authContext.logIn}
         />
       </View>
     </ImageBackground>

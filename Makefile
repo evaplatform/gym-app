@@ -23,6 +23,9 @@ buildAndroid: # it should be ran when you change the native code or install new 
 dev:  # run dev
 	@npx expo start --tunnel
 
+devReset: # run dev with reset cache
+	@npx expo start --tunnel --reset-cache
+
 commit:
 	@read -p "Enter commit message: " message; \
 	git add .; \
