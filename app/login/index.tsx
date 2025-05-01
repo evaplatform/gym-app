@@ -1,17 +1,7 @@
-import { useContext, useState } from "react";
-import { router } from "expo-router";
 import { Button } from "@/components/ui/Button";
 import { ImageBackground, StyleSheet, View } from "react-native";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
-import { useApi } from "@/hooks/useApi";
-import { LoginServices } from "@/services/LoginServices";
-import { ISigninCreateReq } from "@/services/LoginServices/types";
-import { assembleUser } from "@/shared/utils/assembleUser";
-import { useDispatch } from "react-redux";
-import { setUser } from "@/redux/slices/userSlice";
-import { saveUserToStorage } from "@/store/userStore";
-import { AuthContext } from "@/contexts/authContext";
-import { useLogin } from "./useLogin";
+import useLogin from "./useLogin";
 
 const backgroundImg = require("@assets/images/background.jpg");
 const logoImg = require("@assets/images/google-logo.png");
@@ -21,7 +11,7 @@ GoogleSignin.configure({
   webClientId: process.env.EXPO_PUBLIC_WEB_CLIENT_ID,
   iosClientId: process.env.EXPO_PUBLIC_IOS_CLIENT_ID,
   offlineAccess: true,
-  forceCodeForRefreshToken: true, // necessário para conseguir refresh token
+  forceCodeForRefreshToken: true, // it's needed to do a refresh token
 });
 
 export default function Login() {

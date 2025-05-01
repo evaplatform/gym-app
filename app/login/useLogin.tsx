@@ -8,8 +8,9 @@ import { saveUserToStorage } from "@/store/userStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useContext } from "react";
 import { useDispatch } from "react-redux";
+import { Alert } from "react-native";
 
-export function useLogin() {
+export default function useLogin() {
   const authContext = useContext(AuthContext);
   const { call } = useApi();
   const dispatch = useDispatch();
@@ -17,7 +18,9 @@ export function useLogin() {
   const handleGoogleSignIn = async () => {
     call({
       try: async (toast) => {
-        await GoogleSignin.hasPlayServices();
+        await GoogleSignin.hasPlayServices({
+          showPlayServicesUpdateDialog: true,
+        });
         const userInfo = await GoogleSignin.signIn();
         const tokens = await GoogleSignin.getTokens();
 
@@ -51,6 +54,7 @@ export function useLogin() {
         }
       },
       catch: (err) => {
+        Alert.alert('Sign-In Error', err?.message || 'Erro desconhecido');
         console.error("Sign-In Error:", err);
       },
     });

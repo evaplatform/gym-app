@@ -46,7 +46,7 @@ export default function RootLayout() {
                 options={{ headerShown: false, animation: "none" }}
               />
               <Stack.Screen
-                name="login"
+                name="login/index"
                 options={{ headerShown: false, animation: "none" }}
               />
             </Stack>

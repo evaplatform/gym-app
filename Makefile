@@ -12,7 +12,19 @@ help:	      # This help
 	@cat $(MAKEFILE_LIST) | grep -e "^[a-zA-Z_\-]*: *.*"
 ############################################################################### Project support
 
+remoteBuildProduction: # build the project remotely | to render internal distribution, set in the eas.json 'distribution: "internal"' instead of buildType
+	@read -p "Enter expo message: " message; \
+	echo "Building the project remotely..."; \
+	eas build -p android --profile production --message "$$message";
+	
+remoteBuildPreview: # build the project remotely | to render internal distribution, set in the eas.json 'distribution: "internal"' instead of buildType
+	@read -p "Enter expo message: " message; \
+	echo "Building the project remotely..."; \
+	eas build -p android --profile preview --message "$$message";
 
+localBuild: # build the project locally , set "buildType": "apk" in android
+	@echo "Building the project locally..."
+	@eas build -p android --profile preview --local
 
 setJava: # sdk use java 17.0.12-zulu
 	@sdk use java 17.0.12-zulu

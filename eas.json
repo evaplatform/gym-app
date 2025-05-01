@@ -1,0 +1,20 @@
+{
+  "cli": {
+    "version": ">= 15.0.10",
+    "appVersionSource": "remote"
+  },
+  "build": {
+    "preview": {
+      "android": {
+        "buildType": "apk",
+        "distribution": "internal"
+      },
+      "env": {
+        "EXPO_PUBLIC_ANDROID_CLIENT_ID": "524903031433-16rlai0nv3ki04o9jpnatoabhllqgvru.apps.googleusercontent.com",
+        "EXPO_PUBLIC_IOS_CLIENT_ID": "524903031433-un4ss3v3fka8cr13sdfhpl7gpj1vs8bo.apps.googleusercontent.com",
+        "EXPO_PUBLIC_WEB_CLIENT_ID": "524903031433-bv89v82ask4466e767gjesl1hrgrokvd.apps.googleusercontent.com"
+      }
+    },
+    "production": {}
+  }
+}
