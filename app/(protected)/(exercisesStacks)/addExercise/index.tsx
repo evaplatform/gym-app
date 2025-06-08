@@ -1,6 +1,7 @@
 import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
 import { View, StyleSheet, Text } from "react-native";
+import useAddExercise from "./useAddExercise";
 
 // export interface IExercise {
 //   id: string;
@@ -16,10 +17,16 @@ import { View, StyleSheet, Text } from "react-native";
 // }
 
 export default function Page() {
+  const hooks = useAddExercise();
+
   return (
     <View style={styles.container}>
       <View style={{ width: "100%", padding: 10 }}>
-        <Input label="nome do exercício" />
+        <Input
+          label="nome do exercício"
+          value={hooks.name}  
+          onChange={(e) => hooks.setName(e.nativeEvent.text)}
+        />
         {/* Dropdown para selecionar o bloco de exercícios */}
         {/* Dropdown para selecionar a academia */}
         <Input
@@ -28,10 +35,12 @@ export default function Page() {
           numberOfLines={4}
           textAlignVertical="top"
           style={{ height: 120 }}
+          value={hooks.description}
+          onChange={(e) => hooks.setDescription(e.nativeEvent.text)}
         />
       </View>
 
-      <Button title="Adicionar exercício" onPress={() => null} />
+      <Button title="Criar" onPress={hooks.addExercise} />
     </View>
   );
 }

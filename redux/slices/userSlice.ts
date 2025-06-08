@@ -2,7 +2,7 @@ import { LoginServices } from "@/services/LoginServices";
 import { ISigninCreateRes } from "@/services/LoginServices/types";
 import { IUser } from "@/shared/interfaces/IUser";
 import { loginUser } from "@/shared/utils/loginUser";
-import { getUserFromStorage, saveUserToStorage } from "@/store/userStore";
+import { getUserFromStorage, saveUserToStorage } from "@/shared/utils/userStore";
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { RootState } from "..";
 import { assembleUser } from "@/shared/utils/assembleUser";

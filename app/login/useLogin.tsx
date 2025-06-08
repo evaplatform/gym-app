@@ -4,7 +4,7 @@ import { setUser } from "@/redux/slices/userSlice";
 import { LoginServices } from "@/services/LoginServices";
 import { ISigninCreateReq } from "@/services/LoginServices/types";
 import { assembleUser } from "@/shared/utils/assembleUser";
-import { saveUserToStorage } from "@/store/userStore";
+import { saveUserToStorage } from "@/shared/utils/userStore";
 import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useContext } from "react";
 import { useDispatch } from "react-redux";

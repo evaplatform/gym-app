@@ -18,6 +18,9 @@ export function useApi() {
                 await callbackCall(Toast)
             } catch (e) {
 
+                console.log(e)
+                console.log(e)
+
                 if (callbackCatch) {
                     callbackCatch(e)
                 }

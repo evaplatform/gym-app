@@ -1,9 +1,11 @@
 import { AUTH_STORAGE_KEY } from "@/constants/storeKeys";
 import { api } from "@/services/api";
 import { ISigninCreateRes } from "@/services/LoginServices/types";
+import { getUserFromStorage } from "@/shared/utils/userStore";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { SplashScreen, useRouter } from "expo-router";
 import { createContext, PropsWithChildren, useEffect, useState } from "react";
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -12,6 +14,7 @@ type AuthState = {
   isReady: boolean;
   logIn: (data: ISigninCreateRes) => void;
   logOut: () => void;
+  addCredentialsItsLoggedIn: () => Promise<void>;
 };
 
 const initialState: AuthState = {
@@ -19,6 +22,7 @@ const initialState: AuthState = {
   isReady: false,
   logIn: () => {},
   logOut: () => {},
+  addCredentialsItsLoggedIn: async () => {},
 };
 
 export const AuthContext = createContext<AuthState>(initialState);
@@ -42,7 +46,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
     storeAuthState({ isLoggedIn: true });
 
     api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
-    api.defaults.headers.common["x-refresh-token"] = data.googleTokens.refresh_token;
+    api.defaults.headers.common["x-refresh-token"] =
+      data.googleTokens.refresh_token;
 
     router.replace("/");
   };
@@ -55,6 +60,16 @@ export function AuthProvider({ children }: PropsWithChildren) {
     delete api.defaults.headers.common["x-refresh-token"];
 
     router.replace("/login");
+  };
+
+  const addCredentialsItsLoggedIn = async () => {
+    const data = await getUserFromStorage();
+
+    if (data) {
+      api.defaults.headers.common["Authorization"] = `Bearer ${data.token}`;
+      api.defaults.headers.common["x-refresh-token"] =
+        data.googleTokens.refresh_token;
+    }
   };
 
   useEffect(() => {
@@ -83,7 +98,9 @@ export function AuthProvider({ children }: PropsWithChildren) {
   }, [isReady]);
 
   return (
-    <AuthContext.Provider value={{ isReady, isLoggedIn, logIn, logOut }}>
+    <AuthContext.Provider
+      value={{ isReady, isLoggedIn, logIn, logOut, addCredentialsItsLoggedIn }}
+    >
       {children}
     </AuthContext.Provider>
   );

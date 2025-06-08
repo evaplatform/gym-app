@@ -1,6 +1,22 @@
+import { StatusCodeEnum } from "@/shared/enum/StatusCodeEnum";
 import axios from "axios";
 
 const api = axios.create({ baseURL: "https://gym-api-two.vercel.app/" });
+
+api.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error?.response?.status === StatusCodeEnum.UNAUTHORIZED) {
+            // UserService.doLogout()
+        }
+
+        if (error?.code === StatusCodeEnum.ERR_NETWORK) {
+            // throw new ErrorMessage('Erro', 'Erro desconhecido. Tente novamente.')
+        }
+
+        return Promise.reject(error)
+    },
+)
 
 const get = async <Response>(url: string) => {
     const { data } = await api.get<Response>(url);
