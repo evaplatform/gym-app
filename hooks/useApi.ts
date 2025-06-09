@@ -18,23 +18,27 @@ export function useApi() {
                 await callbackCall(Toast)
             } catch (e) {
 
-                console.log(e)
-                console.log(e)
-
                 if (callbackCatch) {
                     callbackCatch(e)
                 }
 
-                // if (axiosError?.response?.data?.userMessage) {
-                //     Toast.show({
-                //         type: 'error',
-                //         text1: 'Hello',
-                //         text2: 'This is some something 👋'
-                //     });
-                // }
+                if ((e as any).response.data.error) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Erro',
+                        text2: (e as any).response.data.error
+                    });
+                }
+
+                if ((e as any)?.response?.data?.userMessage) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Hello',
+                        text2: 'This is some something 👋'
+                    });
+                }
             } finally {
                 callbackFinally?.()
-                // if (loading) dispatch(setIsLoading(false))
             }
         },
         [],

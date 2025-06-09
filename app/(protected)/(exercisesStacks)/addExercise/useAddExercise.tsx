@@ -10,26 +10,16 @@ export default function useAddExercise() {
   const [description, setDescription] = useState<string>("");
 
   const addExercise = async () => {
-    // call({
-    //   try: async (toast) => {
-    try {
-      const request: Partial<IExercise> = {
-        name,
-        description,
-      };
+    call({
+      try: async (toast) => {
+        const request: Partial<IExercise> = {
+          name,
+          description,
+        };
 
-      const res = await ExerciseServices.create(request);
-    } catch (e) {
-      console.error("Error creating exercise:", e);
-      console.error("Error creating exercise:", e);
-    }
-    // toast.show({
-    //   type: "success",
-    //   text1: "Exercício criado",
-    //   text2: `O exercício "${res.name}" foi criado com sucesso!`,
-    // });
-    //   },
-    // });
+        const res = await ExerciseServices.create(request);
+      },
+    });
   };
 
   return {
