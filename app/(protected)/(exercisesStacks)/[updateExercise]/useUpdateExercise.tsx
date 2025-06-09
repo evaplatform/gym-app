@@ -1,8 +1,8 @@
 import { useApi } from "@/hooks/useApi";
 import { ExerciseServices } from "@/services/ExerciseServices";
 import { IExercise } from "@/shared/interfaces/IExercise";
-import { useRouter } from "expo-router";
-import { useState } from "react";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 
 export default function useUpdateExercise(id: string) {
   const { call } = useApi();
@@ -31,6 +31,15 @@ export default function useUpdateExercise(id: string) {
       },
     });
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      ExerciseServices.getById(id).then((exercise) => {
+        setName(exercise.name);
+        exercise.description && setDescription(exercise.description);
+      });
+    }, [id])
+  );
 
   return {
     name,

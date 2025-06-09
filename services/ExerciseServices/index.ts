@@ -1,5 +1,5 @@
 import { IExercise } from "@/shared/interfaces/IExercise";
-import { post, get, put } from "../api";
+import { post, get, patch } from "../api";
 
 
 export class ExerciseServices {
@@ -7,12 +7,16 @@ export class ExerciseServices {
         return get<IExercise[]>('/exercise');
     }
 
+    static async getById(id: string) {
+        return get<IExercise>(`/exercise/${id}`);
+    }
+
     static async create(body: Partial<IExercise>) {
         return post<Partial<IExercise>, Partial<IExercise>>('/exercise', body)
     }
 
     static async update(body: Partial<IExercise>) {
-        return put<Partial<IExercise>, Partial<IExercise>>(`/exercise`, body);
+        return patch<Partial<IExercise>, Partial<IExercise>>(`/exercise`, body);
     }
 
 }

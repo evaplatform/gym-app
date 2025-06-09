@@ -1,6 +1,6 @@
 import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
-import { View, StyleSheet, Text } from "react-native";
+import { View, StyleSheet } from "react-native";
 
 type ExerciseScreenProps = {
   name: string;

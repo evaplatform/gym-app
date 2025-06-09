@@ -12,6 +12,5 @@ export default function Page() {
       setName={hooks.setName}
       onSave={hooks.addExercise}
     />
-
   );
 }
