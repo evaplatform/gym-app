@@ -1,8 +1,10 @@
-import useAddExercise from "./useAddExercise";
 import ExerciseScreen from "@/components/ui/ExerciseScreen";
+import useUpdateExercise from "./useUpdateExercise";
+import { useLocalSearchParams } from "expo-router";
 
 export default function Page() {
-  const hooks = useAddExercise();
+  const { updateExercise: id } = useLocalSearchParams();
+  const hooks = useUpdateExercise(id as string);
 
   return (
     <ExerciseScreen
@@ -10,8 +12,7 @@ export default function Page() {
       setDescription={hooks.setDescription}
       name={hooks.name}
       setName={hooks.setName}
-      onSave={hooks.addExercise}
+      onSave={hooks.onSave}
     />
-
   );
 }

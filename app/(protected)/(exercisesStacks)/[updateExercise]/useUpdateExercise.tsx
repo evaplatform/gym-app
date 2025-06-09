@@ -4,26 +4,27 @@ import { IExercise } from "@/shared/interfaces/IExercise";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 
-export default function useAddExercise() {
+export default function useUpdateExercise(id: string) {
   const { call } = useApi();
   const router = useRouter();
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
 
-  const addExercise = async () => {
+  const onSave = async () => {
     call({
       try: async (toast) => {
         const request: Partial<IExercise> = {
+          id,
           name,
           description,
         };
 
-        const res = await ExerciseServices.create(request);
+        const res = await ExerciseServices.update(request);
 
         toast.show({
           type: "success",
-          text1: "Exercicío criado com sucesso!",
+          text1: "Exercicío editado com sucesso!",
         });
 
         router.back();
@@ -32,10 +33,10 @@ export default function useAddExercise() {
   };
 
   return {
-    addExercise,
     name,
     setName,
     description,
     setDescription,
+    onSave,
   };
 }

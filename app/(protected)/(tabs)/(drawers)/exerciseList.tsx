@@ -7,6 +7,7 @@ import { ExerciseServices } from "@/services/ExerciseServices";
 import { IExercise } from "@/shared/interfaces/IExercise";
 import { useState, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function Page() {
   const router = useRouter();
@@ -36,9 +37,17 @@ export default function Page() {
           data={list}
           keyExtractor={(item) => item.id}
           renderItem={(item) => (
-            <View style={styles.cardWrapper} key={item.item.id}>
-              <Card label={item.item.name} />
-            </View>
+            <TouchableOpacity
+              onPress={() =>
+                router.push(
+                  `/(protected)/(exercisesStacks)/${(item.item as any)._id}`
+                )
+              }
+            >
+              <View style={styles.cardWrapper} key={(item.item as any).id}>
+                <Card label={item.item.name} />
+              </View>
+            </TouchableOpacity>
           )}
         />
       </View>

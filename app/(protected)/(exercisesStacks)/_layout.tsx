@@ -10,6 +10,13 @@ export default function Layou() {
           title: "Adicionar Exercício",
         }}
       />
+      <Stack.Screen
+        name="updateExercise"
+        options={{
+          headerTitle: "Editar Exercício",
+          title: "Editar Exercício",
+        }}
+      />
     </Stack>
   );
 }
