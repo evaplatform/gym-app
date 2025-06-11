@@ -9,6 +9,11 @@ import { GoogleSignin } from "@react-native-google-signin/google-signin";
 import { useContext } from "react";
 import { useDispatch } from "react-redux";
 import { Alert } from "react-native";
+import {
+  getAuth,
+  signInWithCredential,
+  GoogleAuthProvider,
+} from "firebase/auth";
 
 export default function useLogin() {
   const authContext = useContext(AuthContext);
@@ -17,6 +22,7 @@ export default function useLogin() {
 
   const handleGoogleSignIn = async () => {
     call({
+      loading: true,
       try: async (toast) => {
         await GoogleSignin.hasPlayServices({
           showPlayServicesUpdateDialog: true,
@@ -41,6 +47,12 @@ export default function useLogin() {
 
         const apiUser = assembleUser(resp);
 
+        // add Google credentials to Firebase Auth
+        const auth = getAuth();
+        const credential = GoogleAuthProvider.credential(idToken);
+        signInWithCredential(auth, credential);
+        // --
+
         if (apiUser) {
           toast.show({
             type: "success",
@@ -54,7 +66,7 @@ export default function useLogin() {
         }
       },
       catch: (err) => {
-        Alert.alert('Sign-In Error', err?.message || 'Erro desconhecido');
+        Alert.alert("Sign-In Error", err?.message || "Erro desconhecido");
         console.error("Sign-In Error:", err);
       },
     });

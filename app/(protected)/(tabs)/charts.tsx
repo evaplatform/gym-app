@@ -1,10 +1,10 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import Container from "@/components/ui/Container";
 import { Button } from "react-native";
 
 export default function ChartsScreen() {
   return (
-    <ThemedView>
+    <Container>
       <ThemedText>Charts</ThemedText>
       <Button
         title="Go to Explore"
@@ -12,6 +12,6 @@ export default function ChartsScreen() {
           // Navigate to the Explore screen
         }}
       />
-    </ThemedView>
+    </Container>
   );
 }

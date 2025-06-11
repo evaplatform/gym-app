@@ -1,10 +1,10 @@
 import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import Container from "@/components/ui/Container";
 
-export default function ChartsScreen() {
+export default function FinancialScreen() {
   return (
-    <ThemedView>
+    <Container>
       <ThemedText>Financeiro</ThemedText>
-    </ThemedView>
+    </Container>
   );
 }

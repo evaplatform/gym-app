@@ -1,7 +1,6 @@
 import { useMemo } from "react";
 import { Colors } from "@/constants/Colors";
 import {
-  Text,
   TextInput,
   StyleSheet,
   useColorScheme,
@@ -9,6 +8,7 @@ import {
   View,
 } from "react-native";
 import setFirstLabelUppercase from "@/utils/setFirstLabelUppercase";
+import Text from "@/components/ui/Text";
 
 type InputProps = TextInputProps & {
   label?: string;
@@ -21,11 +21,6 @@ export default function Input({ label, style, ...rest }: InputProps) {
   const inputCustonStyle = useMemo(() => {
     return {
       borderColor: Colors[theme].tint,
-    };
-  }, [theme]);
-
-  const labelCustomStyle = useMemo(() => {
-    return {
       color: Colors[theme].text,
     };
   }, [theme]);
@@ -33,9 +28,7 @@ export default function Input({ label, style, ...rest }: InputProps) {
   return (
     <View style={styles.inputContainer}>
       {label && (
-        <Text style={[styles.label, labelCustomStyle]}>
-          {setFirstLabelUppercase(label)}
-        </Text>
+        <Text style={[styles.label]}>{setFirstLabelUppercase(label)}</Text>
       )}
       <TextInput {...rest} style={[styles.input, inputCustonStyle, style]} />
     </View>

@@ -1,7 +1,6 @@
 import {
   View,
   TouchableOpacity,
-  Text,
   StyleSheet,
   useColorScheme,
   TouchableOpacityProps,
@@ -10,6 +9,7 @@ import {
 } from "react-native";
 import { Colors } from "@/constants/Colors";
 import { useMemo } from "react";
+import Text from "@/components/ui/Text";
 
 type ButtonProps = {
   title: string;
@@ -39,10 +39,14 @@ export function Button({
     <TouchableOpacity {...rest} style={[styles.container, customStyle]}>
       {children ?? (
         <View style={styles.contentWrapper}>
-          {imageSource && <Image source={imageSource} style={styles.logo} resizeMode="contain" />}
-          <Text style={[styles.text, { color: Colors[theme].text }]}>
-            {title}
-          </Text>
+          {imageSource && (
+            <Image
+              source={imageSource}
+              style={styles.logo}
+              resizeMode="contain"
+            />
+          )}
+          <Text style={[styles.text]}>{title}</Text>
         </View>
       )}
     </TouchableOpacity>

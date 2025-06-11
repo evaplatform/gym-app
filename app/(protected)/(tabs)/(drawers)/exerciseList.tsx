@@ -5,9 +5,10 @@ import { useFocusEffect, useRouter } from "expo-router";
 import Card from "@/components/ui/Card";
 import { ExerciseServices } from "@/services/ExerciseServices";
 import { IExercise } from "@/shared/interfaces/IExercise";
-import { useState, useCallback } from "react";
+import { useState, useCallback, useContext } from "react";
 import { useApi } from "@/hooks/useApi";
 import { TouchableOpacity } from "react-native-gesture-handler";
+import Container from "@/components/ui/Container";
 
 export default function Page() {
   const router = useRouter();
@@ -30,21 +31,22 @@ export default function Page() {
   );
 
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
       <View style={styles.view}>
         <FlatList
           showsVerticalScrollIndicator
           data={list}
-          keyExtractor={(item) => item.id}
+          keyExtractor={(item) => (item as any)._id}
           renderItem={(item) => (
             <TouchableOpacity
+              key={(item.item as any)._id}
               onPress={() =>
                 router.push(
                   `/(protected)/(exercisesStacks)/${(item.item as any)._id}`
                 )
               }
             >
-              <View style={styles.cardWrapper} key={(item.item as any).id}>
+              <View style={styles.cardWrapper}>
                 <Card label={item.item.name} />
               </View>
             </TouchableOpacity>
@@ -58,16 +60,14 @@ export default function Page() {
           router.push("/(protected)/(exercisesStacks)/addExercise")
         }
       />
-    </View>
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
   },
   view: { flex: 1, width: "100%" },
   cardWrapper: {

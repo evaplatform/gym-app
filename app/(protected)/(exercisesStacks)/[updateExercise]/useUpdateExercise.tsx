@@ -13,6 +13,7 @@ export default function useUpdateExercise(id: string) {
 
   const onSave = async () => {
     call({
+      loading: true,
       try: async (toast) => {
         const request: Partial<IExercise> = {
           id,

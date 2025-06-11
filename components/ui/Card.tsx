@@ -1,6 +1,7 @@
 import { Colors } from "@/constants/Colors";
 import { useMemo } from "react";
-import { View, Text, StyleSheet, useColorScheme } from "react-native";
+import { View, StyleSheet, useColorScheme } from "react-native";
+import Text from "@/components/ui/Text";
 
 type CardProps = {
   label?: string;

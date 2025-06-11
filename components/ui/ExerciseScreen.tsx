@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/Button";
 import Input from "@/components/ui/Input";
+import usePickVideoImage from "@/hooks/usePickVideoImage";
 import { View, StyleSheet } from "react-native";
+import Container from "./Container";
 
 type ExerciseScreenProps = {
   name: string;
@@ -17,8 +19,10 @@ export default function ExerciseScreen({
   onSave,
   setDescription,
 }: ExerciseScreenProps) {
+  const { pickImage, pickVideo } = usePickVideoImage();
+
   return (
-    <View style={styles.container}>
+    <Container style={styles.container}>
       <View style={{ width: "100%" }}>
         <Input
           label="nome do exercício"
@@ -38,16 +42,16 @@ export default function ExerciseScreen({
         />
       </View>
 
+      <Button title="subir imagem" onPress={pickImage} />
+      <Button title="subir video" onPress={pickVideo} />
       <Button title="Salvar" onPress={onSave} />
-    </View>
+    </Container>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
     justifyContent: "space-between",
     alignItems: "center",
-    padding: 10,
   },
 });

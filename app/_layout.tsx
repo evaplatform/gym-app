@@ -16,6 +16,7 @@ import { SafeAreaProvider } from "react-native-safe-area-context";
 import { Provider } from "react-redux";
 import { store } from "@/redux";
 import { AuthProvider } from "@/contexts/authContext";
+import { OverlayProvider } from "@/contexts/overlayContext";
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
@@ -40,18 +41,20 @@ export default function RootLayout() {
           value={colorScheme === "dark" ? DarkTheme : DefaultTheme}
         >
           <SafeAreaProvider>
-            <Stack>
-              <Stack.Screen
-                name="(protected)"
-                options={{ headerShown: false, animation: "none" }}
-              />
-              <Stack.Screen
-                name="login/index"
-                options={{ headerShown: false, animation: "none" }}
-              />
-            </Stack>
-            <StatusBar style="auto" />
-            <Toast />
+            <OverlayProvider>
+              <Stack>
+                <Stack.Screen
+                  name="(protected)"
+                  options={{ headerShown: false, animation: "none" }}
+                />
+                <Stack.Screen
+                  name="login/index"
+                  options={{ headerShown: false, animation: "none" }}
+                />
+              </Stack>
+              <StatusBar style="auto" />
+              <Toast />
+            </OverlayProvider>
           </SafeAreaProvider>
         </ThemeProvider>
       </Provider>

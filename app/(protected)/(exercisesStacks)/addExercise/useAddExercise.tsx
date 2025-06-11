@@ -13,6 +13,7 @@ export default function useAddExercise() {
 
   const addExercise = async () => {
     call({
+      loading: true,
       try: async (toast) => {
         const request: Partial<IExercise> = {
           name,
