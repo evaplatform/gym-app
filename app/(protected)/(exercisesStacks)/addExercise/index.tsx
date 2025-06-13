@@ -1,5 +1,5 @@
 import useAddExercise from "./useAddExercise";
-import ExerciseScreen from "@/components/ui/ExerciseScreen";
+import ExerciseScreen from "@/components/ExerciseScreen";
 
 export default function Page() {
   const hooks = useAddExercise();
@@ -11,6 +11,9 @@ export default function Page() {
       name={hooks.name}
       setName={hooks.setName}
       onSave={hooks.addExercise}
+      setExerciseImage={hooks.setCurrentImagePath}
+      exerciseImage={hooks.currentImagePath}
+      setImageAsset={hooks.setImageAsset}
     />
   );
 }

@@ -1,9 +1,9 @@
 import { OverlayContext } from '@/contexts/overlayContext';
 import { useCallback, useContext } from 'react';
-import Toast, { ToastProps } from 'react-native-toast-message';
+import Toast from 'react-native-toast-message';
 
-type ApiCallType = {
-    try: (toast: any) => Promise<void>
+type ApiCallType<T> = {
+    try: (toast: any) => Promise<T>
     catch?: (error: any) => void
     finally?: () => void
     loading?: boolean
@@ -14,23 +14,27 @@ export function useApi() {
 
 
     const call = useCallback(
-        async ({
+        async <T = void>({
             try: callbackCall,
             finally: callbackFinally,
             catch: callbackCatch,
             loading = false
-        }: ApiCallType) => {
+        }: ApiCallType<T>) => {
             try {
                 if (loading) {
                     state?.showOverlay();
                 }
 
-                await callbackCall(Toast)
+                const res = await callbackCall(Toast)
+                if (res) return res;
             } catch (e) {
 
                 if (callbackCatch) {
                     callbackCatch(e)
                 }
+
+                console.log(e);
+                console.error((e as any)?.response?.data?.error || e);
 
                 if ((e as any).response.data.error) {
                     Toast.show({

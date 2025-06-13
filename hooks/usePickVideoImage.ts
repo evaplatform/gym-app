@@ -1,4 +1,4 @@
-import { uploadToFirebase } from "@/firebase/uploadToFirebase";
+import { deleteFromFirebase, uploadToFirebase } from "@/firebase/uploadToFirebase";
 import * as ImagePicker from "expo-image-picker";
 import { useApi } from "./useApi";
 
@@ -6,8 +6,9 @@ import { useApi } from "./useApi";
 export default function usePickVideoImage() {
     const { call } = useApi();
 
-    const pickImage = async () => {
-        call({
+    const pickImage = async (oldImagePath?: string) => {
+        const res = await call<ImagePicker.ImagePickerAsset[] | undefined>({
+            // loading: true,
             try: async () => {
                 const result = await ImagePicker.launchImageLibraryAsync({
                     mediaTypes: ['images', 'livePhotos'],
@@ -15,16 +16,17 @@ export default function usePickVideoImage() {
                 });
 
                 if (!result.canceled) {
-                    const fileName = result.assets[0].fileName || `image-${Date.now()}.jpg`
-                    const url = await uploadToFirebase(result.assets[0].uri, `uploads/images/${fileName}`);
-                    console.log("Download URL:", url);
+                    return result.assets;
                 }
             }
         })
+
+        return res;
     };
 
     const pickVideo = async () => {
-        call({
+        const res = await call<string | undefined>({
+            loading: true,
             try: async () => {
                 const result = await ImagePicker.launchImageLibraryAsync({
                     mediaTypes: ['videos'],
@@ -34,10 +36,12 @@ export default function usePickVideoImage() {
                 if (!result.canceled) {
                     const fileName = result.assets[0].fileName || `video-${Date.now()}.mp4`
                     const url = await uploadToFirebase(result.assets[0].uri, `uploads/videos/${fileName}`);
-                    console.log("Download URL:", url);
+                    return url;
                 }
             }
         })
+
+        return res;
     }
 
     return { pickImage, pickVideo };

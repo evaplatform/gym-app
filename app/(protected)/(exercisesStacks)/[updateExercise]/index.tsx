@@ -1,4 +1,4 @@
-import ExerciseScreen from "@/components/ui/ExerciseScreen";
+import ExerciseScreen from "@/components/ExerciseScreen";
 import useUpdateExercise from "./useUpdateExercise";
 import { useLocalSearchParams } from "expo-router";
 
@@ -13,6 +13,9 @@ export default function Page() {
       name={hooks.name}
       setName={hooks.setName}
       onSave={hooks.onSave}
+      setExerciseImage={hooks.setCurrentImagePath}
+      exerciseImage={hooks.currentImagePath}
+      setImageAsset={hooks.setImageAsset}
     />
   );
 }
