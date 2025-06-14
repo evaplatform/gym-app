@@ -33,8 +33,7 @@ export function useApi() {
                     callbackCatch(e)
                 }
 
-                console.log(e);
-                console.error((e as any)?.response?.data?.error || e);
+
 
                 if ((e as any).response.data.error) {
                     Toast.show({
@@ -59,7 +58,8 @@ export function useApi() {
                 }
             }
         },
-        [state],
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        [],
     )
 
     return { call }

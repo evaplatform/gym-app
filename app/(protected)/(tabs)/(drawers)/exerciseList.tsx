@@ -47,7 +47,7 @@ export default function Page() {
               }
             >
               <View style={styles.cardWrapper}>
-                <Card label={item.item.name} />
+                <Card label={item.item.name} imageUri={item.item.imagePath} />
               </View>
             </TouchableOpacity>
           )}

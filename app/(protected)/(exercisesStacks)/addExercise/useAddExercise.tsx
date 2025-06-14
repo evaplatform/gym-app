@@ -24,6 +24,29 @@ export default function useAddExercise() {
 
   const addExercise = async () => {
     call({
+      loading: true,
+      catch: async (error) => {
+        if (error.code === "storage/object-not-found") {
+          setCurrentImagePath(undefined);
+          setImageAsset(null);
+          return;
+        }
+
+        if (error.code === "storage/unauthorized") {
+          // User doesn't have permission to access the object
+          return;
+        }
+
+        if (error.code === "storage/canceled") {
+          // User canceled the upload
+          return;
+        }
+
+        if (error.code === "storage/unknown") {
+          // Unknown error occurred, inspect the server response
+          return;
+        }
+      },
       try: async (toast) => {
         const request: Partial<IExercise> = {
           name,
