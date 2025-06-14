@@ -42,13 +42,10 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderWidth: 1,
     borderColor: "#ccc",
-    width: 80,
-    height: 80,
   },
   image: {
     width: 80,
     height: 80,
     resizeMode: "cover",
-    borderRadius: 10,
   },
 });

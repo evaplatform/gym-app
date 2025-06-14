@@ -10,6 +10,7 @@ type ExerciseScreenProps = {
   setName: React.Dispatch<React.SetStateAction<string>>;
   description: string;
   setDescription: React.Dispatch<React.SetStateAction<string>>;
+  currentImagePath?: string | undefined;
   setExerciseImage: React.Dispatch<React.SetStateAction<string | undefined>>;
   exerciseImage: string | undefined;
   onSave: () => Promise<void>;
@@ -27,6 +28,7 @@ export default function ExerciseScreen({
   setExerciseImage,
   exerciseImage,
   setImageAsset,
+  currentImagePath,
 }: ExerciseScreenProps) {
   const { pickImage, pickVideo } = usePickVideoImage();
 
@@ -109,13 +111,10 @@ const styles = StyleSheet.create({
   imageWrapper: {
     borderWidth: 1,
     borderColor: "#ccc",
-    width: 200,
-    height: 200,
   },
   image: {
     width: 200,
     height: 200,
     resizeMode: "cover",
-    borderRadius: 10,
   },
 });

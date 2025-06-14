@@ -5,7 +5,7 @@ import { useFocusEffect, useRouter } from "expo-router";
 import Card from "@/components/ui/Card";
 import { ExerciseServices } from "@/services/ExerciseServices";
 import { IExercise } from "@/shared/interfaces/IExercise";
-import { useState, useCallback, useContext } from "react";
+import { useState, useCallback } from "react";
 import { useApi } from "@/hooks/useApi";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import Container from "@/components/ui/Container";

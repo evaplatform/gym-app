@@ -13,6 +13,7 @@ export default function Page() {
       name={hooks.name}
       setName={hooks.setName}
       onSave={hooks.onSave}
+      currentImagePath={hooks.currentImagePath}
       setExerciseImage={hooks.setCurrentImagePath}
       exerciseImage={hooks.currentImagePath}
       setImageAsset={hooks.setImageAsset}
