@@ -32,7 +32,7 @@ export default function ProtectedLayout() {
     if (Platform.OS === "web") {
       return; // No need to request permissions on web
     }
-    
+
     requestMediaLibraryPermission();
     requestCameraPermission();
   }, [requestCameraPermission, requestMediaLibraryPermission]);

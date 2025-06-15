@@ -12,7 +12,6 @@ type ApiCallType<T> = {
 export function useApi() {
     const state = useContext(OverlayContext);
 
-
     const call = useCallback(
         async <T = void>({
             try: callbackCall,

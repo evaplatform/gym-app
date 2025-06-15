@@ -8,7 +8,7 @@ export default function usePickVideoImage() {
 
     const pickImage = async (oldImagePath?: string) => {
         const res = await call<ImagePicker.ImagePickerAsset[] | undefined>({
-            // loading: true,
+            loading: true,
             try: async () => {
                 const result = await ImagePicker.launchImageLibraryAsync({
                     mediaTypes: ['images', 'livePhotos'],

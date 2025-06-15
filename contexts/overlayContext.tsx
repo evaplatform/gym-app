@@ -26,31 +26,31 @@ export function OverlayProvider({ children }: PropsWithChildren) {
 
   return (
     <OverlayContext.Provider value={{ show, showOverlay, hideOverlay }}>
-      {show && (
-        <View style={{ flex: 1 }}>
+      <>
+        {show && (
           <View style={styles.overlay}>
             <ActivityIndicator
               size="large"
               color={Colors[colorScheme ?? "light"].tint}
             />
           </View>
-          {children}
-        </View>
-      )}
-      {!show && children}
+        )}
+
+        {children}
+      </>
     </OverlayContext.Provider>
   );
 }
 
 const styles = StyleSheet.create({
   overlay: {
+    flex: 1,
     zIndex: 1000,
     width: "100%",
     height: "100%",
     top: 0,
     left: 0,
     position: "absolute",
-    flex: 1,
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "rgba(0,0,0,0.5)",

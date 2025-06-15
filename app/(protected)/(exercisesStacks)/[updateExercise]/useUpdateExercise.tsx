@@ -27,7 +27,7 @@ export default function useUpdateExercise(id: string) {
 
   const onSave = async () => {
     call({
-      // loading: true,
+      loading: true,
       try: async (toast) => {
         const request: Partial<IExercise> = {
           id,
@@ -35,7 +35,7 @@ export default function useUpdateExercise(id: string) {
           description,
         };
 
-        if (oldImagePath && imageAsset && imageAsset.length > 0) {
+        if (imageAsset && imageAsset.length > 0) {
           if (oldImagePath) {
             // Delete old image from Firebase
             await deleteFromFirebase(oldImagePath);

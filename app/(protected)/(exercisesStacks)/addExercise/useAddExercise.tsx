@@ -24,7 +24,7 @@ export default function useAddExercise() {
 
   const addExercise = async () => {
     call({
-      // loading: true,
+      loading: true,
       catch: async (error) => {
         if (error.code === "storage/object-not-found") {
           setCurrentImagePath(undefined);

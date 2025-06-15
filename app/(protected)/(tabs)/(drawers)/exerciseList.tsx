@@ -17,6 +17,7 @@ export default function Page() {
 
   const getExerciseList = useCallback(async () => {
     call({
+      loading: true,
       try: async () => {
         const data = await ExerciseServices.getAll();
         setList(data);
