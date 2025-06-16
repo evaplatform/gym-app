@@ -38,20 +38,26 @@ export default function Page() {
           showsVerticalScrollIndicator
           data={list}
           keyExtractor={(item) => (item as any)._id}
-          renderItem={(item) => (
-            <TouchableOpacity
-              key={(item.item as any)._id}
-              onPress={() =>
-                router.push(
-                  `/(protected)/(exercisesStacks)/${(item.item as any)._id}`
-                )
-              }
-            >
-              <View style={styles.cardWrapper}>
-                <Card label={item.item.name} imageUri={item.item.imagePath} />
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={(item) => {
+            const sourceImage = item?.item?.imagePath
+              ? { uri: item?.item?.imagePath }
+              : require("@/assets/images/default-exercise.jpg");
+
+            return (
+              <TouchableOpacity
+                key={(item.item as any)._id}
+                onPress={() =>
+                  router.push(
+                    `/(protected)/(exercisesStacks)/${(item.item as any)._id}`
+                  )
+                }
+              >
+                <View style={styles.cardWrapper}>
+                  <Card label={item.item.name} source={sourceImage} />
+                </View>
+              </TouchableOpacity>
+            );
+          }}
         />
       </View>
 

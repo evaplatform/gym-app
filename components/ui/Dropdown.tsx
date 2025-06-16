@@ -9,6 +9,7 @@ import {
 import { Picker } from "@react-native-picker/picker";
 import { useMemo } from "react";
 import { Colors } from "@/constants/Colors";
+import setFirstLabelUppercase from "@/utils/setFirstLabelUppercase";
 
 export type ItemType = {
   value: string;
@@ -18,7 +19,7 @@ export type ItemType = {
 type DropdownProps = {
   items: ItemType[];
   selectedValue: string;
-  setSelectedLanguage: React.Dispatch<React.SetStateAction<string>>;
+  setSelectedLanguage: React.Dispatch<React.SetStateAction<any>>;
   label: string;
 };
 
@@ -48,7 +49,9 @@ export default function Dropdown({
 
   return (
     <View style={styles.container}>
-      <Text style={[styles.label, customLabelStyle]}>{label}</Text>
+      <Text style={[styles.label, customLabelStyle]}>
+        {setFirstLabelUppercase(label)}
+      </Text>
       <View style={[customPickerStyle]}>
         <Picker
           selectedValue={selectedValue}

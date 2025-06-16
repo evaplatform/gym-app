@@ -62,6 +62,12 @@ export default function ExerciseScreen({
               {exerciseImage && (
                 <Image source={{ uri: exerciseImage }} style={styles.image} />
               )}
+              {!exerciseImage && (
+                <Image
+                  source={require("@/assets/images/default-exercise.jpg")}
+                  style={styles.image}
+                />
+              )}
             </View>
             <Button
               title="subir imagem"

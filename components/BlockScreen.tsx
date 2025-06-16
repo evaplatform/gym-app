@@ -3,8 +3,6 @@ import usePickVideoImage from "@/hooks/usePickVideoImage";
 import { View, StyleSheet, Image, ScrollView, Text } from "react-native";
 import Container from "./ui/Container";
 import * as ImagePicker from "expo-image-picker";
-import { Picker } from "@react-native-picker/picker";
-import { useState } from "react";
 import Dropdown, { ItemType } from "./ui/Dropdown";
 import Input from "./ui/Input";
 import { blockType, BlockTypeEnum } from "@/shared/enum/BlockTypeEnum";
@@ -12,8 +10,6 @@ import { blockType, BlockTypeEnum } from "@/shared/enum/BlockTypeEnum";
 type BlockScreenProps = {
   name: string;
   setName: React.Dispatch<React.SetStateAction<string>>;
-  description: string;
-  setDescription: React.Dispatch<React.SetStateAction<string>>;
   currentImagePath?: string | undefined;
   setExerciseImage: React.Dispatch<React.SetStateAction<string | undefined>>;
   exerciseImage: string | undefined;
@@ -21,6 +17,8 @@ type BlockScreenProps = {
   setImageAsset: React.Dispatch<
     React.SetStateAction<ImagePicker.ImagePickerAsset[] | null>
   >;
+  selectedBlock: BlockTypeEnum;
+  setSelectedBlock: React.Dispatch<React.SetStateAction<BlockTypeEnum>>;
 };
 
 const items: ItemType[] = [
@@ -37,16 +35,15 @@ const items: ItemType[] = [
 export default function BlockScreen({
   name,
   setName,
-  description,
   onSave,
-  setDescription,
   setExerciseImage,
   exerciseImage,
   setImageAsset,
   currentImagePath,
+  selectedBlock,
+  setSelectedBlock,
 }: BlockScreenProps) {
   const { pickImage, pickVideo } = usePickVideoImage();
-  const [selectedLanguage, setSelectedLanguage] = useState("js");
 
   return (
     <Container>
@@ -62,23 +59,9 @@ export default function BlockScreen({
           <Dropdown
             items={items}
             label="tipo de bloco"
-            selectedValue={selectedLanguage}
-            setSelectedLanguage={setSelectedLanguage}
+            selectedValue={selectedBlock}
+            setSelectedLanguage={setSelectedBlock}
           />
-
-          {/* Dropdown para selecionar o bloco de exercícios */}
-          {/* Dropdown para selecionar a academia */}
-          <View style={styles.inputWrapper}>
-            <Input
-              label="descrição"
-              multiline
-              numberOfLines={4}
-              textAlignVertical="top"
-              style={{ height: 120 }}
-              value={description}
-              onChange={(e) => setDescription(e.nativeEvent.text)}
-            />
-          </View>
 
           <View style={styles.imageVideoGroup}>
             <View style={styles.imageWrapper}>

@@ -14,18 +14,18 @@ import useAddExercise from "../../(exercisesStacks)/addExercise/useAddExercise";
     // updatedAt?: Date;
 
 export default function Page() {
-  const hooks = useAddExercise();
+  const hooks = useAddBlock();
 
   return (
     <BlockScreen
-      description={hooks.description}
-      setDescription={hooks.setDescription}
       name={hooks.name}
       setName={hooks.setName}
-      onSave={hooks.addExercise}
+      onSave={hooks.addBlock}
       setExerciseImage={hooks.setCurrentImagePath}
       exerciseImage={hooks.currentImagePath}
       setImageAsset={hooks.setImageAsset}
+      selectedBlock={hooks.selectedBlock}
+      setSelectedBlock={hooks.setSelectedBlock}
     />
   );
 }

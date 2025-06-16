@@ -1,14 +1,20 @@
 import { Colors } from "@/constants/Colors";
 import { useMemo } from "react";
-import { View, StyleSheet, useColorScheme, Image } from "react-native";
+import {
+  View,
+  StyleSheet,
+  useColorScheme,
+  Image,
+  ImageSourcePropType,
+} from "react-native";
 import Text from "@/components/ui/Text";
 
 type CardProps = {
   label?: string;
-  imageUri?: string;
+  source?: ImageSourcePropType;
 };
 
-export default function Card({ label, imageUri }: CardProps) {
+export default function Card({ label, source }: CardProps) {
   const colorScheme = useColorScheme();
   const theme = useMemo(() => colorScheme ?? "light", [colorScheme]);
 
@@ -21,9 +27,9 @@ export default function Card({ label, imageUri }: CardProps) {
   return (
     <View style={[styles.cardContainer, customStyle]}>
       <Text>{label}</Text>
-      {imageUri && (
+      {source && (
         <View style={styles.imageWrapper}>
-          <Image source={{ uri: imageUri }} style={styles.image} />
+          <Image source={source} style={styles.image} />
         </View>
       )}
     </View>

@@ -5,6 +5,7 @@ import { useRouter } from "expo-router";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
 import { uploadToFirebase } from "@/firebase/uploadToFirebase";
+import { BlockTypeEnum } from "@/shared/enum/BlockTypeEnum";
 
 export default function useAddExercise() {
   const { call } = useApi();
@@ -12,6 +13,7 @@ export default function useAddExercise() {
 
   const [name, setName] = useState<string>("");
   const [description, setDescription] = useState<string>("");
+
   const [currentImagePath, setCurrentImagePath] = useState<string | undefined>(
     undefined
   );

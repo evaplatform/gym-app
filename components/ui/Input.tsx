@@ -18,7 +18,7 @@ export default function Input({ label, style, ...rest }: InputProps) {
   const colorScheme = useColorScheme();
   const theme = useMemo(() => colorScheme ?? "light", [colorScheme]);
 
-  const inputCustonStyle = useMemo(() => {
+  const inputCustomStyle = useMemo(() => {
     return {
       borderColor: Colors[theme].tint,
       color: Colors[theme].text,
@@ -30,7 +30,7 @@ export default function Input({ label, style, ...rest }: InputProps) {
       {label && (
         <Text style={[styles.label]}>{setFirstLabelUppercase(label)}</Text>
       )}
-      <TextInput {...rest} style={[styles.input, inputCustonStyle, style]} />
+      <TextInput {...rest} style={[styles.input, inputCustomStyle, style]} />
     </View>
   );
 }

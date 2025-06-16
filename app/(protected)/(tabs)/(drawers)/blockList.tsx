@@ -15,21 +15,21 @@ export default function Page() {
   const { call } = useApi();
   const [list, setList] = useState<IExercise[]>([]);
 
-//   const getExerciseList = useCallback(async () => {
-//     call({
-//       loading: true,
-//       try: async () => {
-//         const data = await ExerciseServices.getAll();
-//         setList(data);
-//       },
-//     });
-//   }, [call]);
+  //   const getExerciseList = useCallback(async () => {
+  //     call({
+  //       loading: true,
+  //       try: async () => {
+  //         const data = await ExerciseServices.getAll();
+  //         setList(data);
+  //       },
+  //     });
+  //   }, [call]);
 
-//   useFocusEffect(
-//     useCallback(() => {
-//       getExerciseList();
-//     }, [getExerciseList])
-//   );
+  //   useFocusEffect(
+  //     useCallback(() => {
+  //       getExerciseList();
+  //     }, [getExerciseList])
+  //   );
 
   return (
     <Container style={styles.container}>
@@ -38,20 +38,28 @@ export default function Page() {
           showsVerticalScrollIndicator
           data={list}
           keyExtractor={(item) => (item as any)._id}
-          renderItem={(item) => (
-            <TouchableOpacity
-              key={(item.item as any)._id}
-              onPress={() =>
-                router.push(
-                  `/(protected)/(blockExercisesStack)/${(item.item as any)._id}`
-                )
-              }
-            >
-              <View style={styles.cardWrapper}>
-                <Card label={item.item.name} imageUri={item.item.imagePath} />
-              </View>
-            </TouchableOpacity>
-          )}
+          renderItem={(item) => {
+            const sourceImage = item?.item?.imagePath
+              ? { uri: item?.item?.imagePath }
+              : require("@/assets/images/default-exercise.jpg");
+
+            return (
+              <TouchableOpacity
+                key={(item.item as any)._id}
+                onPress={() =>
+                  router.push(
+                    `/(protected)/(blockExercisesStack)/${
+                      (item.item as any)._id
+                    }`
+                  )
+                }
+              >
+                <View style={styles.cardWrapper}>
+                  <Card label={item.item.name} source={sourceImage} />
+                </View>
+              </TouchableOpacity>
+            );
+          }}
         />
       </View>
 
