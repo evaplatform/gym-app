@@ -4,10 +4,7 @@ import { IExercise } from "@/shared/interfaces/IExercise";
 import { useRouter } from "expo-router";
 import { useState } from "react";
 import * as ImagePicker from "expo-image-picker";
-import {
-  deleteFromFirebase,
-  uploadToFirebase,
-} from "@/firebase/uploadToFirebase";
+import { uploadToFirebase } from "@/firebase/uploadToFirebase";
 
 export default function useAddExercise() {
   const { call } = useApi();

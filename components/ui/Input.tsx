@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
   inputContainer: {
     marginVertical: 10,
   },
-  label: {},
+  label: { marginBottom: 5 },
   input: {
     height: 40,
     borderWidth: 1,

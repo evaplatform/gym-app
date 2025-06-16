@@ -58,6 +58,7 @@ export default function ProtectedLayout() {
     <Stack>
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
       <Stack.Screen name="(exercisesStacks)" options={{ headerShown: false }} />
+      <Stack.Screen name="(blockExercisesStack)" options={{ headerShown: false }} />
       <Stack.Screen name="+not-found" />
     </Stack>
   );

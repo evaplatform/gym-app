@@ -10,6 +10,7 @@ export const Colors = {
   light: {
     text: '#11181C',               // Nearly black
     background: '#ffffff',         // Pure white
+    backgroundSecondary: '#E9ECEF', // Slightly darker light gray
     tint: tintColorLight,          // Primary action color (green)
     icon: '#687076',               // Soft gray
     tabIconDefault: '#687076',     // Default tab icon
@@ -19,11 +20,12 @@ export const Colors = {
     gray300: '#dee2e6',
     gray400: '#ced4da',
     gray500: '#adb5bd',
-    gray600: '#6c757d',
+    gray600: '#6c757d', 
   },
   dark: {
     text: '#ECEDEE',               // Light text
     background: '#151718',         // Deep gray
+    backgroundSecondary: '#2c2c2c', // Slightly lighter gray
     tint: tintColorDark,           // Primary action color (green)
     icon: '#9BA1A6',               // Muted gray
     tabIconDefault: '#9BA1A6',     // Default tab icon

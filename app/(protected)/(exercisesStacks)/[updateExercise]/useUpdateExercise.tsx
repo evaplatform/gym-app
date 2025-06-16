@@ -37,7 +37,6 @@ export default function useUpdateExercise(id: string) {
 
         if (imageAsset && imageAsset.length > 0) {
           if (oldImagePath) {
-            // Delete old image from Firebase
             await deleteFromFirebase(oldImagePath);
           }
           const fileName = imageAsset[0].fileName || `image-${Date.now()}.jpg`;

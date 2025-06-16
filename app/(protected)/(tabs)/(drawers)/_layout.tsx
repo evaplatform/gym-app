@@ -20,6 +20,14 @@ export default function Layout() {
             title: "Lista de Exercícios",
           }}
         />
+        <Drawer.Screen
+          name="blockList"
+          options={{
+            headerTitle: "Lista de Blocos de exercícios",
+            drawerLabel: "Lista de Blocos de exercícios",
+            title: "Lista de Blocos de exercícios",
+          }}
+        />
       </Drawer>
     </GestureHandlerRootView>
   );
