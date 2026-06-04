@@ -1,0 +1,1 @@
+export type ApiRequestType<T extends Record<'id' | 'createdAt', any>> = Omit<T, 'id' | 'createdAt'> & Partial<Pick<T, 'id' | 'createdAt'>>;

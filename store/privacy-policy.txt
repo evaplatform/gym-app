@@ -1,0 +1,78 @@
+```txt
+PRIVACY POLICY
+
+Last updated: May 2026
+
+This Privacy Policy explains how the application collects, uses, and protects user information.
+
+1. INFORMATION COLLECTED
+
+The application may collect the following information:
+
+- Name and email address (when using login/authentication)
+- Workout and exercise data
+- Physical activity information
+- Running and cardio tracking data
+- Device location during running activities
+- App usage statistics
+- Device information
+
+2. HOW THE INFORMATION IS USED
+
+The collected information is used to:
+
+- Provide workout and fitness features
+- Track running and cardio activities
+- Save workout progress and history
+- Improve user experience
+- Improve application performance and stability
+- Provide personalized fitness content
+
+3. LOCATION DATA
+
+The app may access device location to:
+
+- Track running routes
+- Measure distance traveled
+- Calculate pace and speed during workouts
+
+Location data is only used while the activity tracking feature is active.
+
+4. DATA SHARING
+
+We do not sell personal information to third parties.
+
+Information may be shared only when necessary for:
+
+- Authentication services
+- Cloud storage services
+- Legal obligations
+- Analytics and crash reporting tools
+
+5. DATA SECURITY
+
+We take reasonable measures to protect user information against unauthorized access, alteration, disclosure, or destruction.
+
+6. USER RIGHTS
+
+Users may:
+
+- Request deletion of their account
+- Request deletion of stored data
+- Stop location access through device settings
+- Stop using the application at any time
+
+7. CHILDREN'S PRIVACY
+
+The application is not intended for children under 13 years old.
+
+8. CHANGES TO THIS POLICY
+
+This Privacy Policy may be updated periodically. Changes become effective immediately after publication.
+
+9. CONTACT
+
+If you have any questions regarding this Privacy Policy, please contact the application support team.
+
+END OF PRIVACY POLICY
+```

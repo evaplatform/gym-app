@@ -1,0 +1,1 @@
+export function safe<T = any,>(p: Promise<T>, catchFunction: any) { p.catch(catchFunction); }

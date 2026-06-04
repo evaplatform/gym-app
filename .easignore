@@ -1,0 +1,59 @@
+# .easignore
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Expo
+.expo/
+.expo-shared/
+dist/
+web-build/
+
+# Android
+android/.gradle/
+android/app/build/
+android/build/
+android/.cxx/
+android/app/debug/
+android/app/release/
+*.apk
+*.aab
+
+# iOS
+ios/Pods/
+ios/build/
+ios/DerivedData/
+*.ipa
+
+# Builds locais
+*.jks
+*.keystore
+release.keystore
+*.p12
+*.mobileprovision
+
+# Logs
+*.log
+logs/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Temporários
+tmp/
+temp/
+.cache/
+
+# Outros
+*.lock
+package-lock.json
+yarn.lock
