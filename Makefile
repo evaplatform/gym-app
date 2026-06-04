@@ -117,3 +117,13 @@ startOnDevice:
 	@adb reverse tcp:8097 tcp:8097;
 	@set REACT_NATIVE_PACKAGER_HOSTNAME=localhost;
 	@npx expo start --dev-client --localhost
+
+removeAndroid:
+	@powershell -Command "Set-Location android; if (Test-Path .gradle) { Remove-Item .gradle -Recurse -Force }; if (Test-Path build) { Remove-Item build -Recurse -Force }; if (Test-Path app\build) { Remove-Item app\build -Recurse -Force }"
+
+clean-all:
+	@powershell -Command "taskkill /F /IM node.exe 2>$$null; exit 0"
+	@npm cache clean --force
+	@powershell -Command "if (Test-Path node_modules) { Remove-Item node_modules -Recurse -Force }"
+	@$(MAKE) removeAndroid
+	@npm install

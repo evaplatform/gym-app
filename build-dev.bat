@@ -3,6 +3,9 @@ echo ========================================
 echo  Gerando APK de DESENVOLVIMENTO
 echo ========================================
 
+REM Define NODE_ENV
+set NODE_ENV=development
+
 REM Limpar builds anteriores
 echo Limpando builds anteriores...
 cd android

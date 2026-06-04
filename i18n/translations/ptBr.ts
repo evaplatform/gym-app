@@ -40,11 +40,12 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.CONFIRM_TEXT]: "Tem certeza que deseja prosseguir?",
   [AppMessagesEnum.INTERNET_CONNECTION_ERROR]:
     "Erro de conexão com a internet. Por favor, verifique sua conexão e tente novamente.",
-      [AppMessagesEnum.FIREBASE_DELETE_ERROR]: "Erro ao deletar arquivo do Firebase.",
+  [AppMessagesEnum.FIREBASE_DELETE_ERROR]:
+    "Erro ao deletar arquivo do Firebase.",
   [AppMessagesEnum.UPDATE]: "Atualizar",
   [AppMessagesEnum.ADD]: "Adicionar",
   [AppMessagesEnum.DELETE]: "Remover",
-  [AppMessagesEnum.VISUALIZE]: "Visualizar", 
+  [AppMessagesEnum.VISUALIZE]: "Visualizar",
   [AppMessagesEnum.EDIT]: "Editar",
   // #endregion General Messages
 
@@ -300,6 +301,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DRAWER_ADD_USER_BUTTON_TITLE]: "Adicionar Usuário",
   [AppMessagesEnum.DRAWER_USER_SETTINGS]: "Configurações do Usuário",
   [AppMessagesEnum.CHARTS_DRAWER]: "Relatórios",
+  [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Assinatura",
   // #endregion Drawer Labels
   // #region HistoryTab Labels
   [AppMessagesEnum.USER_EXERCISE_COMPLETED_AT_LABEL]: "Concluído em",
@@ -378,7 +380,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   // #region Permissions
 
   // Permissões de Grupo
-    [AppMessagesEnum.PERMISSIONS]: "Permissões",
+  [AppMessagesEnum.PERMISSIONS]: "Permissões",
   [AppMessagesEnum.PERMISSION_CHANGE_ACADEMY]: "Alterar academia",
   [AppMessagesEnum.PERMISSION_DRAWER_MENU]: "Menu lateral",
   [AppMessagesEnum.PERMISSION_DRAWER_MENU_HOME]: "Menu lateral - Início",

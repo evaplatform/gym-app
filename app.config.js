@@ -56,7 +56,13 @@ module.exports = ({ config }) => {
     },
 
     plugins: [
-      "@stripe/stripe-react-native",
+      [
+        "@stripe/stripe-react-native",
+        {
+          merchantIdentifier: "merchant.com.seuapp.academia",
+          enableGooglePay: true,
+        },
+      ],
       "expo-router",
       "expo-localization",
       [
@@ -113,6 +119,8 @@ module.exports = ({ config }) => {
       EXPO_PUBLIC_LOG: process.env.EXPO_PUBLIC_LOG || "true",
       GOOGLE_MAPS_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
       PUBLISH_KEY: process.env.PUBLISH_KEY,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      PRICE_ID: process.env.PRICE_ID,
     },
   };
 };

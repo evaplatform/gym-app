@@ -3,10 +3,7 @@ import {
   Pressable,
 } from "react-native-gesture-handler";
 import { Drawer } from "expo-router/drawer";
-import {
-  Platform,
-  StatusBar,
-} from "react-native";
+import { Platform, StatusBar } from "react-native";
 import UserImage from "@/components/custom/UserImage";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -22,7 +19,7 @@ import {
   DrawerNavigationOptions,
   DrawerToggleButton,
 } from "@react-navigation/drawer";
-import {  useRouter } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function DrawerLayout() {
   const dispatch = useDispatch();
@@ -67,7 +64,7 @@ export default function DrawerLayout() {
 
     headerLeft: () => {
       if (!unifiedGroup.drawerMenu.home?.permitted) {
-        return null;  
+        return null;
       }
 
       return <DrawerToggleButton tintColor={colors.text} />;
@@ -233,6 +230,15 @@ export default function DrawerLayout() {
                 ? "flex"
                 : "none",
             },
+          }}
+        />
+
+        <Drawer.Screen
+          name="subscriptionDrawer"
+          options={{
+            headerTitle: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
+            drawerLabel: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
+            title: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
           }}
         />
 

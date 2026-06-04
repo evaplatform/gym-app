@@ -1,10 +1,10 @@
 import { View, StyleSheet } from "react-native";
 import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
-import Text from "@/components/custom/Text";
 import { PUBLISH_KEY } from "@/shared/constants/envConstants";
-import CheckoutScreen from "../CheckoutScreen";
+import CheckoutScreen from "@/components/pages/CheckoutScreen";
 
-export default function App() {
+
+export default function SubscriptionDrawer() {
   return (
     <StripeProvider publishableKey={PUBLISH_KEY}>
       <View style={[styles.container]}>
