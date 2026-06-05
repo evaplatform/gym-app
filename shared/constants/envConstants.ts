@@ -25,3 +25,6 @@ export const LOG =
 
 export const PUBLISH_KEY =
   Constants.expoConfig?.extra?.PUBLISH_KEY ?? manifestExtra?.PUBLISH_KEY;
+
+export const PRICE_ID =
+  Constants.expoConfig?.extra?.PRICE_ID ?? manifestExtra?.PRICE_ID;
