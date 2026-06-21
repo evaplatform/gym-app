@@ -25,6 +25,32 @@ export default function MySubscriptionsScreen() {
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
+  const treatCanceledSubscription = (
+    subscriptions: ISubscriptionByUserData[],
+  ) => {
+    const allSubscriptionAreCanceled = subscriptions.every(
+      (sub) => sub.status === "canceled",
+    );
+
+    if (allSubscriptionAreCanceled) {
+      const latestSubscription = subscriptions
+        .filter(
+          (
+            subscription,
+          ): subscription is ISubscriptionByUserData & {
+            canceled_at: number;
+          } => subscription.canceled_at !== null,
+        )
+        .reduce((latest, current) =>
+          current.canceled_at > latest.canceled_at ? current : latest,
+        );
+
+      return [latestSubscription];
+    }
+
+    return subscriptions.filter((sub) => sub.status !== "canceled");
+  };
+
   const loadSubscriptions = async () => {
     if (!user?.email) return;
 
@@ -32,7 +58,8 @@ export default function MySubscriptionsScreen() {
       const response = await PaymentSubscriptionService.listSubscriptionsByUser(
         user.email,
       );
-      setSubscriptions(response.subscriptions);
+
+      setSubscriptions(treatCanceledSubscription(response.subscriptions));
     } catch (error: any) {
       Alert.alert("Erro", "Não foi possível carregar assinaturas");
     } finally {
