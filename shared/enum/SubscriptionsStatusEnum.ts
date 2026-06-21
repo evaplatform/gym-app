@@ -7,6 +7,7 @@ export enum SubscriptionsStatusEnum {
   PAST_DUE = "past_due",
   INCOMPLETE = "incomplete",
   UNPAID = "unpaid",
+  TRIALING = "trialing",
 }
 
 export const getStatusText = (status: string, cancelAtPeriodEnd: boolean) => {
@@ -24,6 +25,8 @@ export const getStatusText = (status: string, cancelAtPeriodEnd: boolean) => {
       return i18n.translate(AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE);
     case SubscriptionsStatusEnum.UNPAID:
       return i18n.translate(AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID);
+    case SubscriptionsStatusEnum.TRIALING:
+      return i18n.translate(AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING);
     default:
       return status;
   }

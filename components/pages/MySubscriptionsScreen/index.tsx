@@ -9,18 +9,21 @@ import {
   RefreshControl,
 } from "react-native";
 import Text from "@/components/custom/Text";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { RootReduxState } from "@/redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
 import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
-import { useStripe } from "@stripe/stripe-react-native";
 import { PRICE_ID } from "@/shared/constants/envConstants";
 import UpdateCardModal from "@/components/UpdateCardModal";
-import { getStatusText, SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
+import {
+  getStatusText,
+  SubscriptionsStatusEnum,
+} from "@/shared/enum/SubscriptionsStatusEnum";
+import { setSubscriptionListState } from "@/redux/slices/subscriptionSlice";
 
 export default function MySubscriptionsScreen() {
-  const { confirmSetupIntent } = useStripe();
   const { user } = useSelector((state: RootReduxState) => state.user);
+  const dispatch = useDispatch();
   const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>(
     [],
   );
@@ -71,6 +74,7 @@ export default function MySubscriptionsScreen() {
       );
 
       setSubscriptions(treatCanceledSubscription(response.subscriptions));
+      dispatch(setSubscriptionListState(response.subscriptions));
     } catch (error: any) {
       Alert.alert("Erro", "Não foi possível carregar assinaturas");
     } finally {
@@ -262,9 +266,6 @@ export default function MySubscriptionsScreen() {
         return "#666";
     }
   };
-
-
-  
 
   const getCardBrandIcon = (brand: string) => {
     switch (brand.toLowerCase()) {

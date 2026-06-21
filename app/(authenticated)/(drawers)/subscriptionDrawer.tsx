@@ -1,5 +1,5 @@
 import { View, StyleSheet } from "react-native";
-import { StripeProvider, useStripe } from "@stripe/stripe-react-native";
+import { StripeProvider } from "@stripe/stripe-react-native";
 import { PUBLISH_KEY } from "@/shared/constants/envConstants";
 import CheckoutScreen from "@/components/pages/CheckoutScreen";
 

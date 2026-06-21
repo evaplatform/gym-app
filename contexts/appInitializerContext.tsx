@@ -35,6 +35,7 @@ import { GroupLocalService } from "@/database/services/GroupLocalService";
 import { TrainingByUserLocalService } from "@/database/services/TrainingByUserService";
 import { TrainingLocalService } from "@/database/services/TrainingLocalService";
 import { UserLocalService } from "@/database/services/UserLocalService";
+import { fetchSubscription } from "@/redux/actions/subscriptionActions";
 
 type InitializeUserProps = {
   willFetchUser?: boolean;
@@ -44,6 +45,7 @@ type InitializeUserProps = {
   willFetchExerciseHistory?: boolean;
   willFetchGroups?: boolean;
   willFetchGpsValues?: boolean;
+  willFetchSubscription?: boolean;
 };
 
 interface AppInitContextType {
@@ -164,6 +166,7 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
       willFetchExerciseHistory = true,
       willFetchGroups = true,
       willFetchGpsValues = true,
+      willFetchSubscription = true,
     }: InitializeUserProps) => {
       // Verificar se o banco de dados está realmente pronto
       setInitStatus("Verificando banco de dados...");
@@ -231,6 +234,14 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
                   setInitStatus("Carregando valores de GPS...");
                   log("[INIT]-Carregando valores de GPS...");
                   await dispatch(fetchGpsMetricsTemp({ dataBase }));
+                },
+              },
+              {
+                conditional: willFetchSubscription,
+                dispatch: async () => {
+                  setInitStatus("Carregando assinaturas...");
+                  log("[INIT]-Carregando assinaturas...");
+                  await dispatch(fetchSubscription());
                 },
               },
             ];

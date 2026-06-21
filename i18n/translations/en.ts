@@ -293,6 +293,7 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incomplete",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Unpaid",
   [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Canceling",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Trialing",
   // #endregion Subscription
 
   // #region HistoryTab Labels

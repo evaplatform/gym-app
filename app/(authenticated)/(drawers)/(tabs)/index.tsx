@@ -1,8 +1,48 @@
+import { RootReduxState } from "@/redux";
+import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
+import { SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
+import { useFocusEffect, useRouter } from "expo-router";
+import { useCallback } from "react";
 import { StyleSheet, ImageBackground, View } from "react-native";
+import { useSelector } from "react-redux";
 
 const backgroundImg = require("@/assets/images/home-background.png");
 
 export default function HomeScreen() {
+  const { subscriptionList } = useSelector(
+    (state: RootReduxState) => state.subscription,
+  );
+  const router = useRouter();
+
+  const getSubscriptionStatus = useCallback(
+    (subscriptionList: ISubscriptionByUserData[] | null) => {
+      if (!subscriptionList || subscriptionList.length === 0) {
+        // No subscriptions found, navigate to the subscription stack
+        router.push("(drawers)/subscriptionDrawer");
+        return;
+      }
+
+      const hasActiveSubscription = subscriptionList.some((subscription) =>
+        [
+          SubscriptionsStatusEnum.ACTIVE,
+          SubscriptionsStatusEnum.TRIALING,
+        ].includes(subscription.status as SubscriptionsStatusEnum),
+      );
+
+      if(!hasActiveSubscription){
+        router.push("(drawers)/subscriptionByUserDrawer");
+        return;
+      }
+    },
+    [],
+  );
+
+  useFocusEffect(
+    useCallback(() => {
+      getSubscriptionStatus(subscriptionList);
+    }, [subscriptionList]),
+  );
+
   return (
     <View style={styles.container}>
       <ImageBackground

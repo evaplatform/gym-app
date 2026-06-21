@@ -11,12 +11,13 @@ import { CardField, useStripe } from "@stripe/stripe-react-native";
 import Text from "@/components/custom/Text";
 import { PRICE_ID } from "@/shared/constants/envConstants";
 import { RootReduxState } from "@/redux";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
-import { log } from "@/shared/utils/log";
+import { setSubscriptionListState } from "@/redux/slices/subscriptionSlice";
 
 export default function CheckoutScreen() {
   const { user } = useSelector((state: RootReduxState) => state.user);
+  const dispatch = useDispatch();
   const { confirmSetupIntent } = useStripe();
 
   const [loading, setLoading] = useState(false);
@@ -94,6 +95,17 @@ export default function CheckoutScreen() {
           priceId: PRICE_ID,
         });
 
+      if (!user?.email) {
+        Alert.alert("Erro", "Usuário não autenticado");
+        return;
+      }
+
+      const response = await PaymentSubscriptionService.listSubscriptionsByUser(
+        user.email,
+      );
+
+      dispatch(setSubscriptionListState(response.subscriptions));
+
       Alert.alert(
         "🎉 Sucesso!",
         `Assinatura criada!\nID: ${subscription.subscriptionId}\nStatus: ${subscription.status}`,
@@ -109,26 +121,6 @@ export default function CheckoutScreen() {
       );
     } catch (error: any) {
       Alert.alert("Erro", error.message || "Erro ao criar assinatura");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleCheckSubscriptions = async () => {
-    if (!user?.email) {
-      Alert.alert("Erro", "Usuário não autenticado");
-      return;
-    }
-
-    setLoading(true);
-    try {
-      const response = await PaymentSubscriptionService.listSubscriptionsByUser(
-        user.email,
-      );
-
-      log("Assinaturas do usuário:", response.subscriptions);
-    } catch (error: any) {
-      Alert.alert("Erro", error.message || "Erro ao verificar assinaturas");
     } finally {
       setLoading(false);
     }
@@ -202,19 +194,6 @@ export default function CheckoutScreen() {
           </Text>
         </>
       )}
-
-      <View>
-        <TouchableOpacity
-          style={[
-            styles.button,
-            styles.successButton,
-            !cardComplete && styles.buttonDisabled,
-          ]}
-          onPress={handleCheckSubscriptions}
-        >
-          <Text>Verificar Assinaturas</Text>
-        </TouchableOpacity>
-      </View>
 
       {/* Informações */}
       <View style={styles.infoContainer}>

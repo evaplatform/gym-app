@@ -311,6 +311,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE]: "Atrasada",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incompleta",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Não Paga",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Em Teste", 
   [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Cancelando",
   // #endregion Subscription
 

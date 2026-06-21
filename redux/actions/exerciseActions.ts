@@ -107,7 +107,6 @@ export const updateExercise = createAsyncThunk<IExercise | null, ApiRequestType<
             return rejectWithValue('Failed to update exercise');
         }
     }
-
 );
 
 

@@ -20,6 +20,9 @@ import groupReducer, { GroupState } from "./slices/groupSlice";
 import gpsMetricsTempLocalReducer, {
   GpsMetricsTempLocalState,
 } from "./slices/gpsMetricsTempLocalSlice";
+import subscriptionReducer, {
+  SubscriptionState,
+} from "./slices/subscriptionSlice";
 
 let databaseService: LocalDatabaseServices | null = null;
 let databaseInitialized = false;
@@ -36,6 +39,7 @@ type ReducerType = {
   trainingByUser: TrainingByUserState;
   group: GroupState;
   gpsMetricsTemp: GpsMetricsTempLocalState;
+  subscription: SubscriptionState;
 };
 
 const rootReducer: ReducerType = {
@@ -49,6 +53,7 @@ const rootReducer: ReducerType = {
   trainingByUser: trainingByUserReducer,
   group: groupReducer,
   gpsMetricsTemp: gpsMetricsTempLocalReducer,
+  subscription: subscriptionReducer,
 };
 
 export const setDatabaseService = (service: LocalDatabaseServices) => {
