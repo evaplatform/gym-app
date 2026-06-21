@@ -15,6 +15,7 @@ import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServic
 import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
 import { useStripe } from "@stripe/stripe-react-native";
 import { PRICE_ID } from "@/shared/constants/envConstants";
+import UpdateCardModal from "@/components/UpdateCardModal";
 
 export default function MySubscriptionsScreen() {
   const { confirmSetupIntent } = useStripe();
@@ -24,6 +25,15 @@ export default function MySubscriptionsScreen() {
   );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [updateCardModal, setUpdateCardModal] = useState<{
+    visible: boolean;
+    clientSecret: string;
+    subscriptionId: string;
+  }>({
+    visible: false,
+    clientSecret: "",
+    subscriptionId: "",
+  });
 
   const treatCanceledSubscription = (
     subscriptions: ISubscriptionByUserData[],
@@ -69,44 +79,59 @@ export default function MySubscriptionsScreen() {
   };
 
   const handleUpdateCard = async (item: ISubscriptionByUserData) => {
-    Alert.alert("Atualizar Cartão", "Vamos coletar os dados do novo cartão", [
-      { text: "Cancelar", style: "cancel" },
-      {
-        text: "Continuar",
-        onPress: async () => {
-          try {
-            // 1. Criar Setup Intent
-            const setupResponse = await PaymentSubscriptionService.setupIntent({
-              email: user?.email || "",
-            });
+    try {
+      setLoading(true);
 
-            // 2. Confirmar com novo cartão (aqui você pode abrir um modal com CardField)
-            // Por simplicidade, vou simular com token de teste
-            const { setupIntent } = await confirmSetupIntent(
-              setupResponse.clientSecret,
-              {
-                paymentMethodType: "Card",
-              },
-            );
+      // 1. Criar Setup Intent
+      const setupResponse = await PaymentSubscriptionService.setupIntent({
+        email: user?.email || "",
+      });
 
-            if (!setupIntent?.paymentMethodId) {
-              throw new Error("Falha ao processar cartão");
-            }
+      // 2. Abrir modal com o clientSecret
+      setUpdateCardModal({
+        visible: true,
+        clientSecret: setupResponse.clientSecret,
+        subscriptionId: item.id,
+      });
+    } catch (error: any) {
+      Alert.alert("Erro", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-            // 3. Atualizar método de pagamento
-            await PaymentSubscriptionService.updatePaymentMethod({
-              subscriptionId: item.id,
-              paymentMethodId: setupIntent.paymentMethodId,
-            });
+  const handleCardConfirmed = async (paymentMethodId: string) => {
+    try {
+      setLoading(true);
 
-            Alert.alert("✅ Sucesso", "Cartão atualizado com sucesso!");
-            loadSubscriptions();
-          } catch (error: any) {
-            Alert.alert("Erro", error.message);
-          }
-        },
-      },
-    ]);
+      // Atualizar método de pagamento
+      await PaymentSubscriptionService.updatePaymentMethod({
+        subscriptionId: updateCardModal.subscriptionId,
+        paymentMethodId,
+      });
+
+      // Fechar modal
+      setUpdateCardModal({
+        visible: false,
+        clientSecret: "",
+        subscriptionId: "",
+      });
+
+      Alert.alert("✅ Sucesso", "Cartão atualizado com sucesso!");
+      loadSubscriptions();
+    } catch (error: any) {
+      Alert.alert("Erro", error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleCancelUpdateCard = () => {
+    setUpdateCardModal({
+      visible: false,
+      clientSecret: "",
+      subscriptionId: "",
+    });
   };
 
   const handleRetryPayment = async (subscriptionId: string) => {
@@ -501,6 +526,13 @@ export default function MySubscriptionsScreen() {
             tintColor="#007AFF"
           />
         }
+      />
+      {/* Modal de atualização de cartão */}
+      <UpdateCardModal
+        visible={updateCardModal.visible}
+        clientSecret={updateCardModal.clientSecret}
+        onSuccess={handleCardConfirmed}
+        onCancel={handleCancelUpdateCard}
       />
     </View>
   );

@@ -1,4 +1,4 @@
-import { get, post, remove } from "../api";
+import { get, post, put, remove } from "../api";
 import {
   ICreateSubscriptionRequest,
   ICreateSubscriptionResponse,
@@ -36,7 +36,7 @@ export class PaymentSubscriptionService {
   }
 
   static async updatePaymentMethod(body: IUpdatePaymentMethodRequest) {
-    return post<IUpdatePaymentMethodRequest, { message: string }>(
+    return put<IUpdatePaymentMethodRequest, { message: string }>(
       `/payment-subscription/${body.subscriptionId}/payment-method`,
       body,
     );
