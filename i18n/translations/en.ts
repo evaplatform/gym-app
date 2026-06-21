@@ -283,6 +283,7 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DRAWER_USER_SETTINGS]: "User Settings",
   [AppMessagesEnum.CHARTS_DRAWER]: "Charts",
   [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Subscription",
+  [AppMessagesEnum.MY_SUBSCRIPTION]: "My Subscription",
   // #endregion Drawer Labels
   // #region HistoryTab Labels
   [AppMessagesEnum.USER_EXERCISE_COMPLETED_AT_LABEL]: "Completed at",

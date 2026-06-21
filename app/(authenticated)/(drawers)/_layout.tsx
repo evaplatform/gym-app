@@ -243,6 +243,15 @@ export default function DrawerLayout() {
         />
 
         <Drawer.Screen
+          name="subscriptionByUserDrawer"
+          options={{
+            headerTitle: t(AppMessagesEnum.MY_SUBSCRIPTION),
+            drawerLabel: t(AppMessagesEnum.MY_SUBSCRIPTION),
+            title: t(AppMessagesEnum.MY_SUBSCRIPTION),
+          }}
+        />
+
+        <Drawer.Screen
           name="logoutDrawer"
           options={{
             headerTitle: t(AppMessagesEnum.DRAWER_LOGOUT),

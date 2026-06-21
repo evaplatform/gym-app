@@ -13,6 +13,7 @@ import { PRICE_ID } from "@/shared/constants/envConstants";
 import { RootReduxState } from "@/redux";
 import { useSelector } from "react-redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
+import { log } from "@/shared/utils/log";
 
 export default function CheckoutScreen() {
   const { user } = useSelector((state: RootReduxState) => state.user);
@@ -113,6 +114,26 @@ export default function CheckoutScreen() {
     }
   };
 
+  const handleCheckSubscriptions = async () => {
+    if (!user?.email) {
+      Alert.alert("Erro", "Usuário não autenticado");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await PaymentSubscriptionService.listSubscriptionsByUser(
+        user.email,
+      );
+
+      log("Assinaturas do usuário:", response.subscriptions);
+    } catch (error: any) {
+      Alert.alert("Erro", error.message || "Erro ao verificar assinaturas");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
       <View style={styles.header}>
@@ -181,6 +202,19 @@ export default function CheckoutScreen() {
           </Text>
         </>
       )}
+
+      <View>
+        <TouchableOpacity
+          style={[
+            styles.button,
+            styles.successButton,
+            !cardComplete && styles.buttonDisabled,
+          ]}
+          onPress={handleCheckSubscriptions}
+        >
+          <Text>Verificar Assinaturas</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Informações */}
       <View style={styles.infoContainer}>

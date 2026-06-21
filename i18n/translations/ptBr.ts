@@ -302,6 +302,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DRAWER_USER_SETTINGS]: "Configurações do Usuário",
   [AppMessagesEnum.CHARTS_DRAWER]: "Relatórios",
   [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Assinatura",
+  [AppMessagesEnum.MY_SUBSCRIPTION]: "Minha Assinatura",
   // #endregion Drawer Labels
   // #region HistoryTab Labels
   [AppMessagesEnum.USER_EXERCISE_COMPLETED_AT_LABEL]: "Concluído em",
