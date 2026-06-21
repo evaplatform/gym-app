@@ -76,6 +76,12 @@ clean:
 	@if (Test-Path node_modules) { Remove-Item -Recurse -Force node_modules }
 	@if (Test-Path package-lock.json) { Remove-Item -Force package-lock.json }
 
+cleanAndroid: 
+	@Remove-Item -Recurse -Force android\.gradle
+	@Remove-Item -Recurse -Force android\app\.cxx
+	@Remove-Item -Recurse -Force android\app\build
+	@Remove-Item -Recurse -Force android\build
+	
 reset:
 	@make clean
 	@npm install --legacy-peer-deps --force
@@ -116,7 +122,7 @@ startOnDevice:
 	@adb reverse tcp:8081 tcp:8081;
 	@adb reverse tcp:8097 tcp:8097;
 	@set REACT_NATIVE_PACKAGER_HOSTNAME=localhost;
-	@npx expo start --dev-client --localhost
+	@npx expo start --dev-client --localhost --reset-cache
 
 removeAndroid:
 	@powershell -Command "Set-Location android; if (Test-Path .gradle) { Remove-Item .gradle -Recurse -Force }; if (Test-Path build) { Remove-Item build -Recurse -Force }; if (Test-Path app\build) { Remove-Item app\build -Recurse -Force }"

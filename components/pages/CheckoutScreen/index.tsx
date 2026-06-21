@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState } from "react";
 import {
   View,
   StyleSheet,
@@ -6,18 +6,18 @@ import {
   ScrollView,
   ActivityIndicator,
   TouchableOpacity,
-} from 'react-native';
-import { CardField, useStripe } from '@stripe/stripe-react-native';
-import Text from '@/components/custom/Text';
-import { PRICE_ID } from '@/shared/constants/envConstants';
-import { RootReduxState } from '@/redux';
-import { useSelector } from 'react-redux';
-import { PaymentSubscriptionService } from '@/services/PaymentSubscriptionServices';
+} from "react-native";
+import { CardField, useStripe } from "@stripe/stripe-react-native";
+import Text from "@/components/custom/Text";
+import { PRICE_ID } from "@/shared/constants/envConstants";
+import { RootReduxState } from "@/redux";
+import { useSelector } from "react-redux";
+import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
 
 export default function CheckoutScreen() {
   const { user } = useSelector((state: RootReduxState) => state.user);
   const { confirmSetupIntent } = useStripe();
-  
+
   const [loading, setLoading] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
   const [setupData, setSetupData] = useState<{
@@ -28,7 +28,7 @@ export default function CheckoutScreen() {
   // Passo 1: Criar Setup Intent
   const handleCreateSetupIntent = async () => {
     if (!user?.email) {
-      Alert.alert('Erro', 'Usuário não autenticado');
+      Alert.alert("Erro", "Usuário não autenticado");
       return;
     }
 
@@ -43,9 +43,9 @@ export default function CheckoutScreen() {
         customerId: response.customerId,
       });
 
-      Alert.alert('Sucesso', 'Pronto! Agora preencha os dados do cartão.');
+      Alert.alert("Sucesso", "Pronto! Agora preencha os dados do cartão.");
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao iniciar pagamento');
+      Alert.alert("Erro", error.message || "Erro ao iniciar pagamento");
     } finally {
       setLoading(false);
     }
@@ -54,12 +54,12 @@ export default function CheckoutScreen() {
   // Passo 2: Confirmar Setup Intent e Criar Assinatura
   const handleSubscribe = async () => {
     if (!setupData) {
-      Alert.alert('Erro', 'Clique em "Iniciar Pagamento" primeiro');
+      Alert.alert("Erro", 'Clique em "Iniciar Pagamento" primeiro');
       return;
     }
 
     if (!cardComplete) {
-      Alert.alert('Atenção', 'Preencha todos os dados do cartão');
+      Alert.alert("Atenção", "Preencha todos os dados do cartão");
       return;
     }
 
@@ -69,44 +69,45 @@ export default function CheckoutScreen() {
       const { setupIntent, error } = await confirmSetupIntent(
         setupData.clientSecret,
         {
-          paymentMethodType: 'Card',
-        }
+          paymentMethodType: "Card",
+        },
       );
 
       if (error) {
-        Alert.alert('Erro no Cartão', error.message);
+        Alert.alert("Erro no Cartão", error.message);
         setLoading(false);
         return;
       }
 
       if (!setupIntent?.paymentMethodId) {
-        Alert.alert('Erro', 'Não foi possível processar o cartão');
+        Alert.alert("Erro", "Não foi possível processar o cartão");
         setLoading(false);
         return;
       }
 
       // 2. Criar Assinatura no backend
-      const subscription = await PaymentSubscriptionService.createFromSetupIntent({
-        customerId: setupData.customerId,
-        paymentMethodId: setupIntent.paymentMethodId,
-        priceId: PRICE_ID,
-      });
+      const subscription =
+        await PaymentSubscriptionService.createFromSetupIntent({
+          customerId: setupData.customerId,
+          paymentMethodId: setupIntent.paymentMethodId,
+          priceId: PRICE_ID,
+        });
 
       Alert.alert(
-        '🎉 Sucesso!',
+        "🎉 Sucesso!",
         `Assinatura criada!\nID: ${subscription.subscriptionId}\nStatus: ${subscription.status}`,
         [
           {
-            text: 'OK',
+            text: "OK",
             onPress: () => {
               // Navegar para tela de sucesso ou home
               // navigation.navigate('Home');
             },
           },
-        ]
+        ],
       );
     } catch (error: any) {
-      Alert.alert('Erro', error.message || 'Erro ao criar assinatura');
+      Alert.alert("Erro", error.message || "Erro ao criar assinatura");
     } finally {
       setLoading(false);
     }
@@ -141,10 +142,15 @@ export default function CheckoutScreen() {
             <Text style={styles.label}>Dados do Cartão</Text>
             <CardField
               postalCodeEnabled={false}
-            //   placeholder={{
-            //     number: '4242 4242 4242 4242',
-            //   }}
-              cardStyle={styles.card}
+              cardStyle={{
+                backgroundColor: "#FFFFFF",
+                textColor: "#000000", // ← ADICIONE
+                borderColor: "#DDDDDD", // ← ADICIONE
+                borderWidth: 1,
+                borderRadius: 8,
+                fontSize: 16,
+                placeholderColor: "#999999", // ← ADICIONE
+              }}
               style={styles.cardField}
               onCardChange={(cardDetails) => {
                 setCardComplete(cardDetails.complete);
@@ -180,10 +186,8 @@ export default function CheckoutScreen() {
       <View style={styles.infoContainer}>
         <Text style={styles.infoTitle}>ℹ️ Informações</Text>
         <Text style={styles.infoText}>
-          • Cobrança mensal automática{'\n'}
-          • Cancele quando quiser{'\n'}
-          • Primeiro mês: R$ 1,00{'\n'}
-          • Ambiente de teste
+          • Cobrança mensal automática{"\n"}• Cancele quando quiser{"\n"}•
+          Primeiro mês: R$ 1,00{"\n"}• Ambiente de teste
         </Text>
       </View>
     </ScrollView>
@@ -193,30 +197,30 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   content: {
     padding: 20,
   },
   header: {
-    alignItems: 'center',
+    alignItems: "center",
     marginBottom: 30,
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   subtitle: {
     fontSize: 18,
-    color: '#666',
+    color: "#666",
   },
   cardContainer: {
     marginBottom: 20,
   },
   label: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 10,
   },
   cardField: {
@@ -224,50 +228,50 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
   },
   button: {
     height: 50,
     borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 15,
   },
   primaryButton: {
-    backgroundColor: '#007AFF',
+    backgroundColor: "#007AFF",
   },
   successButton: {
-    backgroundColor: '#34C759',
+    backgroundColor: "#34C759",
   },
   buttonDisabled: {
-    backgroundColor: '#ccc',
+    backgroundColor: "#ccc",
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   hint: {
-    textAlign: 'center',
-    color: '#666',
+    textAlign: "center",
+    color: "#666",
     fontSize: 14,
     marginTop: 10,
   },
   infoContainer: {
     marginTop: 30,
     padding: 15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
   },
   infoTitle: {
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: "600",
     marginBottom: 10,
   },
   infoText: {
     fontSize: 14,
-    color: '#666',
+    color: "#666",
     lineHeight: 22,
   },
 });
