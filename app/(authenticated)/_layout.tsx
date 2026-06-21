@@ -111,6 +111,10 @@ export default function StacksLayout() {
           name="(stacks)/(groupsStacks)"
           options={{ headerShown: false }}
         />
+        <Stack.Screen
+          name="(stacks)/(subscriptionStacks)"
+          options={{ headerShown: false }}
+        />
       </Stack>
     </SafeAreaView>
   );

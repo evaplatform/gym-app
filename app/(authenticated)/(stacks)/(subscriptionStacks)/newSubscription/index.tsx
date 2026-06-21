@@ -3,8 +3,7 @@ import { StripeProvider } from "@stripe/stripe-react-native";
 import { PUBLISH_KEY } from "@/shared/constants/envConstants";
 import CheckoutScreen from "@/components/pages/CheckoutScreen";
 
-
-export default function SubscriptionDrawer() {
+export default function NewSubscription() {
   return (
     <StripeProvider publishableKey={PUBLISH_KEY}>
       <View style={[styles.container]}>

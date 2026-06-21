@@ -17,8 +17,9 @@ export default function HomeScreen() {
   const getSubscriptionStatus = useCallback(
     (subscriptionList: ISubscriptionByUserData[] | null) => {
       if (!subscriptionList || subscriptionList.length === 0) {
-        // No subscriptions found, navigate to the subscription stack
-        router.push("(drawers)/subscriptionDrawer");
+        router.push(
+          "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
+        );
         return;
       }
 
@@ -29,7 +30,7 @@ export default function HomeScreen() {
         ].includes(subscription.status as SubscriptionsStatusEnum),
       );
 
-      if(!hasActiveSubscription){
+      if (!hasActiveSubscription) {
         router.push("(drawers)/subscriptionByUserDrawer");
         return;
       }

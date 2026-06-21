@@ -13,6 +13,7 @@ import { clearTrainingByUserState } from "../slices/trainingByUserSlice";
 import { resetAllGpsMetricsTempState } from "../slices/gpsMetricsTempLocalSlice";
 import { fetchGpsMetricsTemp } from "./gpsMetricsTempLocalActions";
 import { clearUser } from "../slices/userSlice";
+import { clearSubscriptionState } from "../slices/subscriptionSlice";
 
 type Input = { resetUser?: boolean; fetchAll?: boolean } | void;
 
@@ -46,6 +47,7 @@ export const resetAllUserDatabase = createAsyncThunk<boolean, Input, State>(
         dispatch(clearGroupsState()),
         dispatch(clearTrainingByUserState()),
         dispatch(resetAllGpsMetricsTempState()),
+        dispatch(clearSubscriptionState())
       ]);
 
       if (inputData?.resetUser) {

@@ -234,15 +234,6 @@ export default function DrawerLayout() {
         />
 
         <Drawer.Screen
-          name="subscriptionDrawer"
-          options={{
-            headerTitle: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
-            drawerLabel: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
-            title: t(AppMessagesEnum.DRAWER_SUBSCRIPTION),
-          }}
-        />
-
-        <Drawer.Screen
           name="subscriptionByUserDrawer"
           options={{
             headerTitle: t(AppMessagesEnum.MY_SUBSCRIPTION),
