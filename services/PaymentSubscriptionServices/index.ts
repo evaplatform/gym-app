@@ -2,9 +2,12 @@ import { get, post, remove } from "../api";
 import {
   ICreateSubscriptionRequest,
   ICreateSubscriptionResponse,
+  IReactivateSubscriptionRequest,
+  IRetryPaymentRequest,
   ISetupIntentRequest,
   ISetupIntentResponse,
   ISubscriptionByUserResponse,
+  IUpdatePaymentMethodRequest,
 } from "./intefaces";
 
 export class PaymentSubscriptionService {
@@ -30,5 +33,28 @@ export class PaymentSubscriptionService {
 
   static async cancelSubscription(subscriptionId: string) {
     return remove(`/payment-subscription/${subscriptionId}`);
+  }
+
+  static async updatePaymentMethod(body: IUpdatePaymentMethodRequest) {
+    return post<IUpdatePaymentMethodRequest, { message: string }>(
+      `/payment-subscription/${body.subscriptionId}/payment-method`,
+      body,
+    );
+  }
+
+  // Tentar cobrar novamente (para assinaturas past_due)
+  static async retryPayment(subscriptionId: string) {
+    return post<IRetryPaymentRequest, { message: string; status: string }>(
+      `/payment-subscription/${subscriptionId}/retry-payment`,
+      { subscriptionId },
+    );
+  }
+
+  // Reativar assinatura cancelada
+  static async reactivateSubscription(body: IReactivateSubscriptionRequest) {
+    return post<IReactivateSubscriptionRequest, ICreateSubscriptionResponse>(
+      "/payment-subscription/reactivate",
+      body,
+    );
   }
 }

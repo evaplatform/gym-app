@@ -278,3 +278,18 @@ export interface ISubscriptionByUserData {
 
   trial_start: number | null;
 }
+
+export interface IUpdatePaymentMethodRequest {
+  subscriptionId: string;
+  paymentMethodId: string;
+}
+
+export interface IRetryPaymentRequest {
+  subscriptionId: string;
+}
+
+export interface IReactivateSubscriptionRequest {
+  customerId: string;
+  priceId: string;
+  paymentMethodId?: string;
+}

@@ -13,8 +13,11 @@ import { useSelector } from "react-redux";
 import { RootReduxState } from "@/redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
 import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
+import { useStripe } from "@stripe/stripe-react-native";
+import { PRICE_ID } from "@/shared/constants/envConstants";
 
 export default function MySubscriptionsScreen() {
+  const { confirmSetupIntent } = useStripe();
   const { user } = useSelector((state: RootReduxState) => state.user);
   const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>(
     [],
@@ -36,6 +39,117 @@ export default function MySubscriptionsScreen() {
       setLoading(false);
       setRefreshing(false);
     }
+  };
+
+  const handleUpdateCard = async (item: ISubscriptionByUserData) => {
+    Alert.alert("Atualizar Cartão", "Vamos coletar os dados do novo cartão", [
+      { text: "Cancelar", style: "cancel" },
+      {
+        text: "Continuar",
+        onPress: async () => {
+          try {
+            // 1. Criar Setup Intent
+            const setupResponse = await PaymentSubscriptionService.setupIntent({
+              email: user?.email || "",
+            });
+
+            // 2. Confirmar com novo cartão (aqui você pode abrir um modal com CardField)
+            // Por simplicidade, vou simular com token de teste
+            const { setupIntent } = await confirmSetupIntent(
+              setupResponse.clientSecret,
+              {
+                paymentMethodType: "Card",
+              },
+            );
+
+            if (!setupIntent?.paymentMethodId) {
+              throw new Error("Falha ao processar cartão");
+            }
+
+            // 3. Atualizar método de pagamento
+            await PaymentSubscriptionService.updatePaymentMethod({
+              subscriptionId: item.id,
+              paymentMethodId: setupIntent.paymentMethodId,
+            });
+
+            Alert.alert("✅ Sucesso", "Cartão atualizado com sucesso!");
+            loadSubscriptions();
+          } catch (error: any) {
+            Alert.alert("Erro", error.message);
+          }
+        },
+      },
+    ]);
+  };
+
+  const handleRetryPayment = async (subscriptionId: string) => {
+    Alert.alert(
+      "Tentar Novamente",
+      "Vamos tentar processar o pagamento novamente com o cartão atual.",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Tentar",
+          onPress: async () => {
+            try {
+              setLoading(true);
+              const result =
+                await PaymentSubscriptionService.retryPayment(subscriptionId);
+
+              if (result.status === "paid") {
+                Alert.alert("✅ Sucesso", "Pagamento processado com sucesso!");
+              } else {
+                Alert.alert("⚠️ Atenção", "Pagamento ainda pendente");
+              }
+
+              loadSubscriptions();
+            } catch (error: any) {
+              Alert.alert(
+                "Erro",
+                error.message || "Não foi possível processar o pagamento",
+              );
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+    );
+  };
+
+  const handleReactivate = async (item: ISubscriptionByUserData) => {
+    Alert.alert(
+      "Reativar Assinatura",
+      "Deseja reativar sua assinatura premium?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Reativar",
+          onPress: async () => {
+            try {
+              setLoading(true);
+
+              // Usar mesmo cartão ou pedir novo?
+              const customerId = item.customer;
+              const paymentMethodId = item.default_payment_method?.id;
+
+              await PaymentSubscriptionService.reactivateSubscription({
+                customerId,
+                priceId: PRICE_ID,
+                paymentMethodId,
+              });
+
+              Alert.alert("✅ Reativada", "Sua assinatura foi reativada!");
+              loadSubscriptions();
+            } catch (error: any) {
+              Alert.alert("Erro", error.message);
+            } finally {
+              setLoading(false);
+            }
+          },
+        },
+      ],
+    );
   };
 
   useEffect(() => {
@@ -137,6 +251,8 @@ export default function MySubscriptionsScreen() {
 
     const isActive = item.status === "active";
     const willCancel = item.cancel_at_period_end;
+    const isPastDue = item.status === "past_due";
+    const isCanceled = item.status === "canceled";
 
     // ✅ Função helper para pegar valor e moeda
     const getPriceInfo = () => {
@@ -237,17 +353,68 @@ export default function MySubscriptionsScreen() {
           )}
         </View>
 
-        {/* Botão de cancelar */}
-        {isActive && !willCancel && (
-          <TouchableOpacity
-            style={styles.cancelButton}
-            onPress={() => handleCancelSubscription(item.id)}
-          >
-            <Text style={styles.cancelButtonText}>Cancelar Assinatura</Text>
-          </TouchableOpacity>
+        {/* Botões de ação */}
+        <View style={styles.actionsContainer}>
+          {/* Assinatura ativa - Botões normais */}
+          {isActive && !willCancel && (
+            <>
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={() => handleUpdateCard(item)}
+              >
+                <Text style={styles.secondaryButtonText}>
+                  🔄 Atualizar Cartão
+                </Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.cancelButton}
+                onPress={() => handleCancelSubscription(item.id)}
+              >
+                <Text style={styles.cancelButtonText}>Cancelar Assinatura</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Assinatura vencida - Opções de recuperação */}
+          {isPastDue && (
+            <>
+              <TouchableOpacity
+                style={styles.warningButton}
+                onPress={() => handleRetryPayment(item.id)}
+              >
+                <Text style={styles.buttonText}>⚡ Tentar Pagamento</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={styles.secondaryButton}
+                onPress={() => handleUpdateCard(item)}
+              >
+                <Text style={styles.secondaryButtonText}>💳 Trocar Cartão</Text>
+              </TouchableOpacity>
+            </>
+          )}
+
+          {/* Assinatura cancelada - Opção de reativar */}
+          {isCanceled && (
+            <TouchableOpacity
+              style={styles.primaryButton}
+              onPress={() => handleReactivate(item)}
+            >
+              <Text style={styles.buttonText}>♻️ Reativar Assinatura</Text>
+            </TouchableOpacity>
+          )}
+        </View>
+
+        {/* Avisos */}
+        {isPastDue && (
+          <View style={[styles.warningBox, { backgroundColor: "#FFE5E5" }]}>
+            <Text style={[styles.warningText, { color: "#C70000" }]}>
+              ⚠️ Pagamento em atraso. Atualize seu cartão ou tente novamente.
+            </Text>
+          </View>
         )}
 
-        {/* Aviso de cancelamento */}
         {willCancel && firstItem && (
           <View style={styles.warningBox}>
             <Text style={styles.warningText}>
@@ -449,15 +616,51 @@ const styles = StyleSheet.create({
     fontSize: 15,
     fontWeight: "600",
   },
+  warningText: {
+    fontSize: 13,
+    color: "#856404",
+  },
+  actionsContainer: {
+    gap: 10,
+    marginTop: 15,
+    marginBottom: 15,
+  },
+  primaryButton: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  secondaryButton: {
+    backgroundColor: "#fff",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+    borderWidth: 1.5,
+    borderColor: "#007AFF",
+  },
+  secondaryButtonText: {
+    color: "#007AFF",
+    fontSize: 15,
+    fontWeight: "600",
+  },
+  warningButton: {
+    backgroundColor: "#FF9500",
+    paddingVertical: 14,
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 15,
+    fontWeight: "600",
+  },
   warningBox: {
     backgroundColor: "#FFF3CD",
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
     borderLeftColor: "#FF9500",
-  },
-  warningText: {
-    fontSize: 13,
-    color: "#856404",
+    marginTop: 10,
   },
 });
