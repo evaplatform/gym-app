@@ -16,6 +16,7 @@ import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/
 import { useStripe } from "@stripe/stripe-react-native";
 import { PRICE_ID } from "@/shared/constants/envConstants";
 import UpdateCardModal from "@/components/UpdateCardModal";
+import { getStatusText, SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
 
 export default function MySubscriptionsScreen() {
   const { confirmSetupIntent } = useStripe();
@@ -250,34 +251,20 @@ export default function MySubscriptionsScreen() {
 
   const getStatusColor = (status: string) => {
     switch (status) {
-      case "active":
+      case SubscriptionsStatusEnum.ACTIVE:
         return "#34C759";
-      case "canceled":
+      case SubscriptionsStatusEnum.CANCELED:
         return "#FF3B30";
-      case "incomplete":
-      case "past_due":
+      case SubscriptionsStatusEnum.PAST_DUE:
+      case SubscriptionsStatusEnum.UNPAID:
         return "#FF9500";
       default:
         return "#666";
     }
   };
 
-  const getStatusText = (status: string, cancelAtPeriodEnd: boolean) => {
-    if (cancelAtPeriodEnd) return "Cancelando";
 
-    switch (status) {
-      case "active":
-        return "Ativa";
-      case "canceled":
-        return "Cancelada";
-      case "incomplete":
-        return "Incompleta";
-      case "past_due":
-        return "Vencida";
-      default:
-        return status;
-    }
-  };
+  
 
   const getCardBrandIcon = (brand: string) => {
     switch (brand.toLowerCase()) {
@@ -301,10 +288,10 @@ export default function MySubscriptionsScreen() {
     // ✅ Card
     const card = item.default_payment_method?.card;
 
-    const isActive = item.status === "active";
+    const isActive = item.status === SubscriptionsStatusEnum.ACTIVE;
     const willCancel = item.cancel_at_period_end;
-    const isPastDue = item.status === "past_due";
-    const isCanceled = item.status === "canceled";
+    const isPastDue = item.status === SubscriptionsStatusEnum.PAST_DUE;
+    const isCanceled = item.status === SubscriptionsStatusEnum.CANCELED;
 
     // ✅ Função helper para pegar valor e moeda
     const getPriceInfo = () => {

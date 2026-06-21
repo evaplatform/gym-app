@@ -304,6 +304,16 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Assinatura",
   [AppMessagesEnum.MY_SUBSCRIPTION]: "Minha Assinatura",
   // #endregion Drawer Labels
+
+  // #region Subscription
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_ACTIVE]: "Ativa",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_CANCELED]: "Cancelada",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE]: "Atrasada",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incompleta",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Não Paga",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Cancelando",
+  // #endregion Subscription
+
   // #region HistoryTab Labels
   [AppMessagesEnum.USER_EXERCISE_COMPLETED_AT_LABEL]: "Concluído em",
   [AppMessagesEnum.USER_EXERCISE_NOTES_LABEL]: "Minhas anotações",

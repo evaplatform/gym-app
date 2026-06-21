@@ -47,7 +47,7 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.UPDATE]: "Update",
   [AppMessagesEnum.ADD]: "Add",
   [AppMessagesEnum.DELETE]: "Delete",
-  [AppMessagesEnum.VISUALIZE]: "Visualize", 
+  [AppMessagesEnum.VISUALIZE]: "Visualize",
   [AppMessagesEnum.EDIT]: "Edit",
   // #endregion Firebase
 
@@ -285,6 +285,16 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Subscription",
   [AppMessagesEnum.MY_SUBSCRIPTION]: "My Subscription",
   // #endregion Drawer Labels
+
+  // #region Subscription
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_ACTIVE]: "Active",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_CANCELED]: "Canceled",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE]: "Past Due",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incomplete",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Unpaid",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Canceling",
+  // #endregion Subscription
+
   // #region HistoryTab Labels
   [AppMessagesEnum.USER_EXERCISE_COMPLETED_AT_LABEL]: "Completed at",
   [AppMessagesEnum.USER_EXERCISE_NOTES_LABEL]: "My notes",
