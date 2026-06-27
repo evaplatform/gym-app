@@ -1,8 +1,19 @@
 // src/i18n/translations/pt.ts
+import App from "@/components/pages/PaymentScreen";
 import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
 
 export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   //#region General Messages
+  [AppMessagesEnum.TRY]: "Tentar",
+  [AppMessagesEnum.NOT]: "Não",
+  [AppMessagesEnum.YES]: "Sim",
+  [AppMessagesEnum.YES_CANCEL]: "Sim, cancelar",
+  [AppMessagesEnum.TRY_AGAIN]: "Tentar Novamente",
+  [AppMessagesEnum.ATTENTION]: "Atenção",
+  [AppMessagesEnum.OK]: "OK",
+  [AppMessagesEnum.INFO]: "Informações",
+  [AppMessagesEnum.STATUS]: "Status",
+  [AppMessagesEnum.ID]: "ID",
   [AppMessagesEnum.LANGUAGE_SELECTOR_LABEL]: "Selecionar Idioma",
   [AppMessagesEnum.SUCCESS]: "Sucesso",
   [AppMessagesEnum.ERROR]: "Erro",
@@ -47,7 +58,13 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.DELETE]: "Remover",
   [AppMessagesEnum.VISUALIZE]: "Visualizar",
   [AppMessagesEnum.EDIT]: "Editar",
+  [AppMessagesEnum.CARD]: "Cartão",
   // #endregion General Messages
+
+  // #region calendar
+  [AppMessagesEnum.MONTH]: "Mês",
+  [AppMessagesEnum.YEAR]: "Ano",
+  // #endregion calendar
 
   // #region Firebase
   [AppMessagesEnum.FIREBASE_BIG_FILE]:
@@ -303,6 +320,15 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.CHARTS_DRAWER]: "Relatórios",
   [AppMessagesEnum.DRAWER_SUBSCRIPTION]: "Assinatura",
   [AppMessagesEnum.MY_SUBSCRIPTION]: "Minha Assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_AUTO_RENEW]: "Cobrança Mensal Automática",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL_ANYTIME]: "Cancele a Qualquer Momento",
+  [AppMessagesEnum.SUBSCRIPTION_FIRST_MONTH]: "Primeiro Mês",
+  [AppMessagesEnum.SUBSCRIPTION_TEST_ENVIRONMENT]: "Ambiente de Teste",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_SUCCESS]: "Pronto! Agora preencha os dados do cartão.",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_ERROR_MESSAGE]: "Erro ao iniciar pagamento.",
+  [AppMessagesEnum.SUBSCRIPTION_LOAD_ERROR]: "Não foi possível carregar assinaturas",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_SUCCESS]: "Cartão atualizado com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS]: "Pagamento processado com sucesso!",
   // #endregion Drawer Labels
 
   // #region Subscription
@@ -311,8 +337,46 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE]: "Atrasada",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incompleta",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Não Paga",
-  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Em Teste", 
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Em Teste",
   [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Cancelando",
+  [AppMessagesEnum.SUBSCRIPTION_PLAN_PREMIUM]: "Plano Premium",
+  [AppMessagesEnum.SUBSCRIPTION_START_DATE]: "Data de Início",
+  [AppMessagesEnum.SUBSCRIPTION_NEXT_BILLING_DATE]: "Próxima Cobrança",
+  [AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL]: "Válido Até",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELED_AT]: "Cancelada em",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL]: "Cancelar Assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL_WARNING]: "Você perderá acesso aos benefícios premium. Tem certeza?",
+  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT]: "Tentar Pagamento",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD]: "Trocar Cartão",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE]: "Reativar Assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_PAST_DUE_WARNING]:
+    "Pagamento em atraso. Atualize seu cartão ou tente novamente.",
+  [AppMessagesEnum.SUBSCRIPTION_WILL_CANCEL_WARNING]:
+    "Sua assinatura será cancelada em",
+  [AppMessagesEnum.SUBSCRIPTION_LOADING]: "Carregando assinaturas...",
+  [AppMessagesEnum.SUBSCRIPTION_NO_SUBSCRIPTIONS]: "Nenhuma assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_NO_ACTIVE_SUBSCRIPTIONS]:
+    "Você ainda não possui assinaturas ativas.",
+  [AppMessagesEnum.SUBSCRIPTION_SUBSCRIBE_NOW]: "Assinar Agora",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_DESCRIPTION]:
+    "Digite os dados do novo cartão de crédito",
+  [AppMessagesEnum.SUBSCRIPTION_START_PAYMENT]: "Iniciar Pagamento",
+  [AppMessagesEnum.SUBSCRIPTION_CARD_DATA]: "Dados do Cartão",
+  [AppMessagesEnum.SUBSCRIPTION_CONFIRM_SUBSCRIPTION]: "Confirmar Assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_USE_CARD_DATA]: "Use o cartão de teste",
+  [AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST]: "Clique em \"Iniciar Pagamento\" primeiro",
+  [AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA]: "Preencha todos os dados do cartão",
+  [AppMessagesEnum.SUBSCRIPTION_CARD_ERROR]: "Erro no cartão",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD]: "Não foi possível processar o cartão",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT]: "Não foi possível processar o pagamento",
+  [AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE]: "Erro ao criar assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_CREATED]: "Assinatura criada!",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING]: "Pagamento ainda pendente",
+  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION]: "Vamos tentar processar o pagamento novamente com o cartão atual.",
+  [ AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE]: "Reativar Assinatura",
+  [ AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION]: "Deseja reativar sua assinatura premium?",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]: "Assinatura reativada com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELED]: "Sua assinatura foi cancelada",
   // #endregion Subscription
 
   // #region HistoryTab Labels
@@ -338,6 +402,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.USER_EXERCISE_PARTIALLY_COMPLETED_LABEL]:
     "Parcialmente Concluído",
   [AppMessagesEnum.USER_EXERCISE_USER_NOTES_LABEL]: "Notas do Usuário",
+  [AppMessagesEnum.USER_NOT_AUTHENTICATED]: "Usuário não autenticado.",
   // #endregion HistoryTab Labels
 
   // #region GPS SCREEN
@@ -482,6 +547,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
     "Menu lateral - Grupos - Excluir",
   [AppMessagesEnum.PERMISSION_DRAWER_MENU_GROUPS_UPDATE]:
     "Menu lateral - Grupos - Atualizar",
-
+  [AppMessagesEnum.PERMISSION_DRAWER_MENU_MY_SUBSCRIPTION]:
+    "Menu lateral - Minha Assinatura",
   // #endregion Permissions
 };

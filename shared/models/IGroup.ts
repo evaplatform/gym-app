@@ -81,6 +81,9 @@ export interface IGroupPermissions {
       delete: PermissionNode;
       update: PermissionNode;
     };
+    mySubscription: {
+      permitted: boolean;
+    };
   };
 }
 
@@ -127,78 +130,40 @@ export const getLabelForPermissionKey = (
 
     // Users
     "drawerMenu.users": t(AppMessagesEnum.PERMISSION_DRAWER_MENU_USERS),
-    "drawerMenu.users.visualize": t(
-      AppMessagesEnum.VISUALIZE,
-    ),
+    "drawerMenu.users.visualize": t(AppMessagesEnum.VISUALIZE),
     "drawerMenu.users.add": t(AppMessagesEnum.ADD),
-    "drawerMenu.users.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.users.update": t(
-      AppMessagesEnum.UPDATE,
-    ),
+    "drawerMenu.users.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.users.update": t(AppMessagesEnum.UPDATE),
 
     // Academies
     "drawerMenu.academies": t(AppMessagesEnum.PERMISSION_DRAWER_MENU_ACADEMIES),
-    "drawerMenu.academies.visualize": t(
-      AppMessagesEnum.VISUALIZE,
-    ),
-    "drawerMenu.academies.add": t(
-      AppMessagesEnum.ADD,
-    ),
-    "drawerMenu.academies.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.academies.update": t(
-      AppMessagesEnum.UPDATE,
-    ),
+    "drawerMenu.academies.visualize": t(AppMessagesEnum.VISUALIZE),
+    "drawerMenu.academies.add": t(AppMessagesEnum.ADD),
+    "drawerMenu.academies.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.academies.update": t(AppMessagesEnum.UPDATE),
 
     // Exercises
     "drawerMenu.exercises": t(AppMessagesEnum.PERMISSION_DRAWER_MENU_EXERCISES),
-    "drawerMenu.exercises.visualize": t(
-      AppMessagesEnum.VISUALIZE,
-    ),
-    "drawerMenu.exercises.add": t(
-      AppMessagesEnum.ADD,
-    ),
-    "drawerMenu.exercises.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.exercises.update": t(
-      AppMessagesEnum.UPDATE,
-    ),
+    "drawerMenu.exercises.visualize": t(AppMessagesEnum.VISUALIZE),
+    "drawerMenu.exercises.add": t(AppMessagesEnum.ADD),
+    "drawerMenu.exercises.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.exercises.update": t(AppMessagesEnum.UPDATE),
 
     // Trainings
     "drawerMenu.trainings": t(AppMessagesEnum.PERMISSION_DRAWER_MENU_TRAININGS),
-    "drawerMenu.trainings.visualize": t(
-      AppMessagesEnum.VISUALIZE,
-    ),
-    "drawerMenu.trainings.add": t(
-      AppMessagesEnum.ADD,
-    ),
-    "drawerMenu.trainings.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.trainings.update": t(
-      AppMessagesEnum.UPDATE,
-    ),
+    "drawerMenu.trainings.visualize": t(AppMessagesEnum.VISUALIZE),
+    "drawerMenu.trainings.add": t(AppMessagesEnum.ADD),
+    "drawerMenu.trainings.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.trainings.update": t(AppMessagesEnum.UPDATE),
 
     // Training By User List
     "drawerMenu.trainingByUserList": t(
       AppMessagesEnum.PERMISSION_DRAWER_MENU_TRAINING_BY_USER_LIST,
     ),
-    "drawerMenu.trainingByUserList.visualize": t(
-      AppMessagesEnum.VISUALIZE,
-    ),
-    "drawerMenu.trainingByUserList.add": t(
-      AppMessagesEnum.ADD,
-    ),
-    "drawerMenu.trainingByUserList.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.trainingByUserList.update": t(
-      AppMessagesEnum.UPDATE,
-    ),
+    "drawerMenu.trainingByUserList.visualize": t(AppMessagesEnum.VISUALIZE),
+    "drawerMenu.trainingByUserList.add": t(AppMessagesEnum.ADD),
+    "drawerMenu.trainingByUserList.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.trainingByUserList.update": t(AppMessagesEnum.UPDATE),
 
     // User Settings
     "drawerMenu.userSettings": t(
@@ -225,14 +190,11 @@ export const getLabelForPermissionKey = (
     "drawerMenu.groups.changeAcademyButton": t(
       AppMessagesEnum.PERMISSION_DRAWER_MENU_GROUPS_CHANGE_ACADEMY_BUTTON,
     ),
-    "drawerMenu.groups.add": t(
-      AppMessagesEnum.ADD,
-    ),
-    "drawerMenu.groups.delete": t(
-      AppMessagesEnum.DELETE,
-    ),
-    "drawerMenu.groups.update": t(
-      AppMessagesEnum.UPDATE,
+    "drawerMenu.groups.add": t(AppMessagesEnum.ADD),
+    "drawerMenu.groups.delete": t(AppMessagesEnum.DELETE),
+    "drawerMenu.groups.update": t(AppMessagesEnum.UPDATE),
+    "drawerMenu.mySubscription": t(
+      AppMessagesEnum.PERMISSION_DRAWER_MENU_MY_SUBSCRIPTION,
     ),
   };
   return labelMap[key] || key;

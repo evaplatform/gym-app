@@ -1,11 +1,10 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import {
   View,
   StyleSheet,
   FlatList,
   Alert,
   ActivityIndicator,
-  TouchableOpacity,
   RefreshControl,
 } from "react-native";
 import Text from "@/components/custom/Text";
@@ -20,10 +19,21 @@ import {
   SubscriptionsStatusEnum,
 } from "@/shared/enum/SubscriptionsStatusEnum";
 import { setSubscriptionListState } from "@/redux/slices/subscriptionSlice";
+import { useTranslation } from "@/hooks/useTranslation";
+import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
+import useCustomStyle from "@/hooks/useCustomStyle";
+import { Button } from "@/components/custom/Button";
+import { SeverityEnum } from "@/shared/enum/SeverityEnum";
+import Toast from "react-native-toast-message";
+import { useApi } from "@/hooks/useApi";
 
 export default function MySubscriptionsScreen() {
+  const { call } = useApi();
+  const { t } = useTranslation();
   const { user } = useSelector((state: RootReduxState) => state.user);
   const dispatch = useDispatch();
+  const { colors } = useCustomStyle();
+
   const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>(
     [],
   );
@@ -76,7 +86,11 @@ export default function MySubscriptionsScreen() {
       setSubscriptions(treatCanceledSubscription(response.subscriptions));
       dispatch(setSubscriptionListState(response.subscriptions));
     } catch (error: any) {
-      Alert.alert("Erro", "Não foi possível carregar assinaturas");
+      Toast.show({
+        type: "error",
+        text1: t(AppMessagesEnum.ERROR),
+        text2: t(AppMessagesEnum.SUBSCRIPTION_LOAD_ERROR),
+      });
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -84,51 +98,73 @@ export default function MySubscriptionsScreen() {
   };
 
   const handleUpdateCard = async (item: ISubscriptionByUserData) => {
-    try {
-      setLoading(true);
+    call({
+      loading: true,
+      try: async () => {
+        setLoading(true);
 
-      // 1. Criar Setup Intent
-      const setupResponse = await PaymentSubscriptionService.setupIntent({
-        email: user?.email || "",
-      });
+        // 1. Criar Setup Intent
+        const setupResponse = await PaymentSubscriptionService.setupIntent({
+          email: user?.email || "",
+        });
 
-      // 2. Abrir modal com o clientSecret
-      setUpdateCardModal({
-        visible: true,
-        clientSecret: setupResponse.clientSecret,
-        subscriptionId: item.id,
-      });
-    } catch (error: any) {
-      Alert.alert("Erro", error.message);
-    } finally {
-      setLoading(false);
-    }
+        // 2. Abrir modal com o clientSecret
+        setUpdateCardModal({
+          visible: true,
+          clientSecret: setupResponse.clientSecret,
+          subscriptionId: item.id,
+        });
+      },
+      catch: async (toast, error) => {
+        toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.ERROR),
+          text2: error.message,
+        });
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   };
 
   const handleCardConfirmed = async (paymentMethodId: string) => {
-    try {
-      setLoading(true);
+    call({
+      loading: true,
+      try: async (toast) => {
+        setLoading(true);
 
-      // Atualizar método de pagamento
-      await PaymentSubscriptionService.updatePaymentMethod({
-        subscriptionId: updateCardModal.subscriptionId,
-        paymentMethodId,
-      });
+        // Atualizar método de pagamento
+        await PaymentSubscriptionService.updatePaymentMethod({
+          subscriptionId: updateCardModal.subscriptionId,
+          paymentMethodId,
+        });
 
-      // Fechar modal
-      setUpdateCardModal({
-        visible: false,
-        clientSecret: "",
-        subscriptionId: "",
-      });
+        // Fechar modal
+        setUpdateCardModal({
+          visible: false,
+          clientSecret: "",
+          subscriptionId: "",
+        });
 
-      Alert.alert("✅ Sucesso", "Cartão atualizado com sucesso!");
-      loadSubscriptions();
-    } catch (error: any) {
-      Alert.alert("Erro", error.message);
-    } finally {
-      setLoading(false);
-    }
+        toast.show({
+          type: "success",
+          text1: t(AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_SUCCESS),
+        });
+
+        loadSubscriptions();
+      },
+      catch: async (toast, error) => {
+        toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.ERROR),
+          text2: error.message,
+        });
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   };
 
   const handleCancelUpdateCard = () => {
@@ -139,35 +175,55 @@ export default function MySubscriptionsScreen() {
     });
   };
 
+  const retryPayment = async (subscriptionId: string) => {
+    call({
+      loading: true,
+      try: async (toast) => {
+        setLoading(true);
+        const result =
+          await PaymentSubscriptionService.retryPayment(subscriptionId);
+
+        if (result.status === "paid") {
+          toast.show({
+            type: "success",
+            text1: t(AppMessagesEnum.SUCCESS),
+            text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS),
+          });
+        } else {
+          toast.show({
+            type: "error",
+            text1: t(AppMessagesEnum.ATTENTION),
+            text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING),
+          });
+        }
+
+        loadSubscriptions();
+      },
+      catch: async (toast, error) => {
+        toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.ERROR),
+          text2:
+            error.message ||
+            t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT),
+        });
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
+  };
+
   const handleRetryPayment = async (subscriptionId: string) => {
     Alert.alert(
-      "Tentar Novamente",
-      "Vamos tentar processar o pagamento novamente com o cartão atual.",
+      t(AppMessagesEnum.TRY_AGAIN),
+      t(AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t(AppMessagesEnum.CANCEL), style: "cancel" },
         {
-          text: "Tentar",
+          text: t(AppMessagesEnum.TRY),
           onPress: async () => {
-            try {
-              setLoading(true);
-              const result =
-                await PaymentSubscriptionService.retryPayment(subscriptionId);
-
-              if (result.status === "paid") {
-                Alert.alert("✅ Sucesso", "Pagamento processado com sucesso!");
-              } else {
-                Alert.alert("⚠️ Atenção", "Pagamento ainda pendente");
-              }
-
-              loadSubscriptions();
-            } catch (error: any) {
-              Alert.alert(
-                "Erro",
-                error.message || "Não foi possível processar o pagamento",
-              );
-            } finally {
-              setLoading(false);
-            }
+            await retryPayment(subscriptionId);
           },
         },
       ],
@@ -176,33 +232,46 @@ export default function MySubscriptionsScreen() {
 
   const handleReactivate = async (item: ISubscriptionByUserData) => {
     Alert.alert(
-      "Reativar Assinatura",
-      "Deseja reativar sua assinatura premium?",
+      t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE),
+      t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION),
       [
-        { text: "Cancelar", style: "cancel" },
+        { text: t(AppMessagesEnum.CANCEL), style: "cancel" },
         {
-          text: "Reativar",
+          text: t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE),
           onPress: async () => {
-            try {
-              setLoading(true);
+            call({
+              loading: true,
+              try: async (toast) => {
+                setLoading(true);
 
-              // Usar mesmo cartão ou pedir novo?
-              const customerId = item.customer;
-              const paymentMethodId = item.default_payment_method?.id;
+                // Usar mesmo cartão ou pedir novo?
+                const customerId = item.customer;
+                const paymentMethodId = item.default_payment_method?.id;
 
-              await PaymentSubscriptionService.reactivateSubscription({
-                customerId,
-                priceId: PRICE_ID,
-                paymentMethodId,
-              });
+                await PaymentSubscriptionService.reactivateSubscription({
+                  customerId,
+                  priceId: PRICE_ID,
+                  paymentMethodId,
+                });
 
-              Alert.alert("✅ Reativada", "Sua assinatura foi reativada!");
-              loadSubscriptions();
-            } catch (error: any) {
-              Alert.alert("Erro", error.message);
-            } finally {
-              setLoading(false);
-            }
+                toast.show({
+                  type: "success",
+                  text1: t(AppMessagesEnum.SUCCESS),
+                  text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS),
+                });
+                loadSubscriptions();
+              },
+              catch(toast, error) {
+                toast.show({
+                  type: "error",
+                  text1: t(AppMessagesEnum.ERROR),
+                  text2: error.message,
+                });
+              },
+              finally: async () => {
+                setLoading(false);
+              },
+            });
           },
         },
       ],
@@ -215,23 +284,36 @@ export default function MySubscriptionsScreen() {
 
   const handleCancelSubscription = (subscriptionId: string) => {
     Alert.alert(
-      "Cancelar Assinatura",
-      "Você perderá acesso aos benefícios premium. Tem certeza?",
+      t(AppMessagesEnum.SUBSCRIPTION_CANCEL),
+      t(AppMessagesEnum.SUBSCRIPTION_CANCEL_WARNING),
       [
-        { text: "Não", style: "cancel" },
+        { text: t(AppMessagesEnum.NOT), style: "cancel" },
         {
-          text: "Sim, cancelar",
+          text: t(AppMessagesEnum.YES_CANCEL),
           style: "destructive",
           onPress: async () => {
-            try {
-              await PaymentSubscriptionService.cancelSubscription(
-                subscriptionId,
-              );
-              Alert.alert("✅ Cancelada", "Sua assinatura foi cancelada");
-              loadSubscriptions();
-            } catch (error: any) {
-              Alert.alert("Erro", error.message);
-            }
+            call({
+              loading: true,
+              try: async (toast) => {
+                await PaymentSubscriptionService.cancelSubscription(
+                  subscriptionId,
+                );
+
+                toast.show({
+                  type: "success",
+                  text1: t(AppMessagesEnum.SUCCESS),
+                  text2: t(AppMessagesEnum.SUBSCRIPTION_CANCELED),
+                });
+                loadSubscriptions();
+              },
+              catch: async (toast, error) => {
+                toast.show({
+                  type: "error",
+                  text1: t(AppMessagesEnum.ERROR),
+                  text2: error.message,
+                });
+              },
+            });
           },
         },
       ],
@@ -256,14 +338,14 @@ export default function MySubscriptionsScreen() {
   const getStatusColor = (status: string) => {
     switch (status) {
       case SubscriptionsStatusEnum.ACTIVE:
-        return "#34C759";
+        return colors.notification.success;
       case SubscriptionsStatusEnum.CANCELED:
-        return "#FF3B30";
+        return colors.notification.danger;
       case SubscriptionsStatusEnum.PAST_DUE:
       case SubscriptionsStatusEnum.UNPAID:
-        return "#FF9500";
+        return colors.notification.warn;
       default:
-        return "#666";
+        return colors.notification.info;
     }
   };
 
@@ -279,6 +361,70 @@ export default function MySubscriptionsScreen() {
         return "💳";
     }
   };
+
+  const customStyle = useMemo(() => {
+    return {
+      container: {
+        backgroundColor: colors.background,
+      },
+      loadingContainer: {
+        backgroundColor: colors.background,
+      },
+      loadingText: {
+        color: colors.text,
+      },
+      emptyContainer: {
+        backgroundColor: colors.backgroundSecondary,
+      },
+      emptyTitle: {
+        color: colors.gray500,
+      },
+      emptyText: {
+        color: colors.gray500,
+      },
+      card: {
+        backgroundColor: colors.backgroundSecondary,
+        shadowColor: colors.shadow,
+      },
+      cardTitle: {
+        color: colors.text,
+      },
+      statusText: {
+        color: colors.gray300,
+      },
+      priceText: {
+        color: colors.tint,
+      },
+      intervalText: {
+        color: colors.gray600,
+      },
+      infoLabel: {
+        color: colors.gray600,
+      },
+      infoValue: {
+        color: colors.text,
+      },
+      cancelButton: {
+        backgroundColor: colors.notification.danger,
+      },
+      cancelButtonText: {
+        color: colors.text,
+      },
+      warningText: {
+        color: colors.notification.warn,
+      },
+      primaryButton: {
+        backgroundColor: colors.tint,
+      },
+      secondaryButton: {
+        backgroundColor: colors.background,
+      },
+      warningBox: {
+        backgroundColor: colors.notification.warnBackground,
+        borderLeftColor: colors.notification.warn,
+      },
+    };
+  }, [colors]);
 
   const renderSubscription = ({ item }: { item: ISubscriptionByUserData }) => {
     // ✅ Pegar price do primeiro item
@@ -314,12 +460,16 @@ export default function MySubscriptionsScreen() {
     const priceInfo = getPriceInfo();
 
     return (
-      <View style={styles.card}>
+      <View style={[styles.card, customStyle.card]}>
         {/* Header */}
         <View style={styles.cardHeader}>
           <View>
-            <Text style={styles.cardTitle}>Plano Premium</Text>
-            <Text style={styles.planId}>ID: {item.id.substring(0, 20)}...</Text>
+            <Text style={[styles.cardTitle, customStyle.cardTitle]}>
+              {t(AppMessagesEnum.SUBSCRIPTION_PLAN_PREMIUM)}
+            </Text>
+            <Text style={styles.planId}>
+              {t(AppMessagesEnum.ID)}: {item.id.substring(0, 20)}...
+            </Text>
           </View>
           <View
             style={[
@@ -327,7 +477,7 @@ export default function MySubscriptionsScreen() {
               { backgroundColor: getStatusColor(item.status) },
             ]}
           >
-            <Text style={styles.statusText}>
+            <Text style={[styles.statusText, customStyle.statusText]}>
               {getStatusText(item.status, willCancel)}
             </Text>
           </View>
@@ -335,11 +485,14 @@ export default function MySubscriptionsScreen() {
 
         {/* Preço */}
         <View style={styles.priceContainer}>
-          <Text style={styles.priceText}>
+          <Text style={[styles.priceText, customStyle.priceText]}>
             {formatPrice(priceInfo.amount, priceInfo.currency)}
           </Text>
-          <Text style={styles.intervalText}>
-            / {priceInfo.interval === "month" ? "mês" : "ano"}
+          <Text style={[styles.intervalText, customStyle.intervalText]}>
+            /{" "}
+            {priceInfo.interval === "month"
+              ? t(AppMessagesEnum.MONTH)
+              : t(AppMessagesEnum.YEAR)}
           </Text>
         </View>
 
@@ -348,7 +501,9 @@ export default function MySubscriptionsScreen() {
           {/* Cartão */}
           {card && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>💳 Cartão:</Text>
+              <Text style={styles.infoLabel}>
+                💳 {t(AppMessagesEnum.CARD)}:
+              </Text>
               <Text style={styles.infoValue}>
                 {getCardBrandIcon(card.brand)} •••• {card.last4} (
                 {card.exp_month}/{card.exp_year})
@@ -358,14 +513,18 @@ export default function MySubscriptionsScreen() {
 
           {/* Data de início */}
           <View style={styles.infoRow}>
-            <Text style={styles.infoLabel}>📅 Início:</Text>
+            <Text style={styles.infoLabel}>
+              📅 {t(AppMessagesEnum.SUBSCRIPTION_START_DATE)}:
+            </Text>
             <Text style={styles.infoValue}>{formatDate(item.start_date)}</Text>
           </View>
 
           {/* Próxima cobrança */}
           {isActive && !willCancel && firstItem && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>🔄 Próxima cobrança:</Text>
+              <Text style={styles.infoLabel}>
+                🔄 {t(AppMessagesEnum.SUBSCRIPTION_NEXT_BILLING_DATE)}:
+              </Text>
               <Text style={styles.infoValue}>
                 {formatDate(firstItem.current_period_end)}
               </Text>
@@ -375,8 +534,12 @@ export default function MySubscriptionsScreen() {
           {/* Válido até (se cancelando) */}
           {willCancel && firstItem && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>⚠️ Válido até:</Text>
-              <Text style={[styles.infoValue, { color: "#FF9500" }]}>
+              <Text style={styles.infoLabel}>
+                ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL)}:
+              </Text>
+              <Text
+                style={[styles.infoValue, { color: colors.notification.warn }]}
+              >
                 {formatDate(firstItem.current_period_end)}
               </Text>
             </View>
@@ -385,7 +548,9 @@ export default function MySubscriptionsScreen() {
           {/* Data de cancelamento */}
           {item.canceled_at && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>❌ Cancelada em:</Text>
+              <Text style={styles.infoLabel}>
+                ❌ {t(AppMessagesEnum.SUBSCRIPTION_CANCELED_AT)}:
+              </Text>
               <Text style={styles.infoValue}>
                 {formatDate(item.canceled_at)}
               </Text>
@@ -398,59 +563,62 @@ export default function MySubscriptionsScreen() {
           {/* Assinatura ativa - Botões normais */}
           {isActive && !willCancel && (
             <>
-              <TouchableOpacity
-                style={styles.secondaryButton}
+              <Button
+                title={t(AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD)}
                 onPress={() => handleUpdateCard(item)}
-              >
-                <Text style={styles.secondaryButtonText}>
-                  🔄 Atualizar Cartão
-                </Text>
-              </TouchableOpacity>
+                severity={SeverityEnum.SECONDARY}
+                disabled={loading}
+              />
 
-              <TouchableOpacity
-                style={styles.cancelButton}
+              <Button
+                title={t(AppMessagesEnum.SUBSCRIPTION_CANCEL)}
                 onPress={() => handleCancelSubscription(item.id)}
-              >
-                <Text style={styles.cancelButtonText}>Cancelar Assinatura</Text>
-              </TouchableOpacity>
+                severity={SeverityEnum.DANGER}
+              />
             </>
           )}
 
           {/* Assinatura vencida - Opções de recuperação */}
           {isPastDue && (
             <>
-              <TouchableOpacity
-                style={styles.warningButton}
+              <Button
+                title={`⚡ ${t(AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT)}`}
                 onPress={() => handleRetryPayment(item.id)}
-              >
-                <Text style={styles.buttonText}>⚡ Tentar Pagamento</Text>
-              </TouchableOpacity>
+                severity={SeverityEnum.SECONDARY}
+              />
 
-              <TouchableOpacity
-                style={styles.secondaryButton}
+              <Button
+                title={`💳 ${t(AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD)}`}
                 onPress={() => handleUpdateCard(item)}
-              >
-                <Text style={styles.secondaryButtonText}>💳 Trocar Cartão</Text>
-              </TouchableOpacity>
+                severity={SeverityEnum.SECONDARY}
+              />
             </>
           )}
 
           {/* Assinatura cancelada - Opção de reativar */}
           {isCanceled && (
-            <TouchableOpacity
-              style={styles.primaryButton}
+            <Button
+              title={`♻️ ${t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE)}`}
               onPress={() => handleReactivate(item)}
-            >
-              <Text style={styles.buttonText}>♻️ Reativar Assinatura</Text>
-            </TouchableOpacity>
+            />
           )}
         </View>
 
         {/* Avisos */}
         {isPastDue && (
-          <View style={[styles.warningBox, { backgroundColor: "#FFE5E5" }]}>
-            <Text style={[styles.warningText, { color: "#C70000" }]}>
-              ⚠️ Pagamento em atraso. Atualize seu cartão ou tente novamente.
+          <View
+            style={[
+              styles.warningBox,
+              { backgroundColor: colors.notification.dangerBackground },
+            ]}
+          >
+            <Text
+              style={[
+                styles.warningText,
+                { color: colors.notification.danger },
+              ]}
+            >
+              ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_PAST_DUE_WARNING)}
             </Text>
           </View>
         )}
@@ -458,7 +626,7 @@ export default function MySubscriptionsScreen() {
         {willCancel && firstItem && (
           <View style={styles.warningBox}>
             <Text style={styles.warningText}>
-              ⚠️ Esta assinatura será cancelada em{" "}
+              ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_WILL_CANCEL_WARNING)}{" "}
               {formatDate(firstItem.current_period_end)}
             </Text>
           </View>
@@ -467,38 +635,40 @@ export default function MySubscriptionsScreen() {
     );
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Carregando assinaturas...</Text>
-      </View>
-    );
-  }
+  // if (loading) {
+  //   return (
+  //     <View style={[styles.loadingContainer, customStyle.loadingContainer]}>
+  //       <ActivityIndicator size="large" color={colors.tint} />
+  //       <Text style={[styles.loadingText, customStyle.loadingText]}>
+  //         {t(AppMessagesEnum.SUBSCRIPTION_LOADING)}
+  //       </Text>
+  //     </View>
+  //   );
+  // }
 
   if (subscriptions.length === 0) {
     return (
-      <View style={styles.emptyContainer}>
+      <View style={[styles.emptyContainer, customStyle.emptyContainer]}>
         <Text style={styles.emptyIcon}>📭</Text>
-        <Text style={styles.emptyTitle}>Nenhuma assinatura</Text>
-        <Text style={styles.emptyText}>
-          Você ainda não possui assinaturas ativas
+        <Text style={[styles.emptyTitle, customStyle.emptyTitle]}>
+          {t(AppMessagesEnum.SUBSCRIPTION_NO_SUBSCRIPTIONS)}
         </Text>
-        <TouchableOpacity
-          style={styles.subscribeButton}
+        <Text style={[styles.emptyText, customStyle.emptyText]}>
+          {t(AppMessagesEnum.SUBSCRIPTION_NO_ACTIVE_SUBSCRIPTIONS)}
+        </Text>
+        <Button
+          title={t(AppMessagesEnum.SUBSCRIPTION_SUBSCRIBE_NOW)}
           onPress={() => {
             // Navegar para tela de checkout
             // navigation.navigate('Checkout');
           }}
-        >
-          <Text style={styles.subscribeButtonText}>Assinar Agora</Text>
-        </TouchableOpacity>
+        />
       </View>
     );
   }
 
   return (
-    <View style={styles.container}>
+    <View style={[styles.container, customStyle.container]}>
       <FlatList
         data={subscriptions}
         renderItem={renderSubscription}
@@ -511,7 +681,7 @@ export default function MySubscriptionsScreen() {
               setRefreshing(true);
               loadSubscriptions();
             }}
-            tintColor="#007AFF"
+            tintColor={colors.tint}
           />
         }
       />
@@ -529,25 +699,21 @@ export default function MySubscriptionsScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "#f5f5f5",
   },
   loadingText: {
     marginTop: 10,
     fontSize: 16,
-    color: "#666",
   },
   emptyContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
     padding: 30,
-    backgroundColor: "#f5f5f5",
   },
   emptyIcon: {
     fontSize: 64,
@@ -557,34 +723,24 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
     marginBottom: 10,
-    color: "#333",
   },
   emptyText: {
     fontSize: 16,
-    color: "#666",
     marginBottom: 30,
     textAlign: "center",
   },
   subscribeButton: {
-    backgroundColor: "#007AFF",
     paddingHorizontal: 40,
     paddingVertical: 14,
     borderRadius: 10,
-  },
-  subscribeButtonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   listContent: {
     padding: 15,
   },
   card: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
     marginBottom: 15,
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 8,
@@ -603,7 +759,6 @@ const styles = StyleSheet.create({
   },
   planId: {
     fontSize: 12,
-    color: "#999",
     marginTop: 4,
   },
   statusBadge: {
@@ -612,7 +767,6 @@ const styles = StyleSheet.create({
     borderRadius: 16,
   },
   statusText: {
-    color: "#fff",
     fontSize: 12,
     fontWeight: "600",
   },
@@ -624,11 +778,9 @@ const styles = StyleSheet.create({
   priceText: {
     fontSize: 32,
     fontWeight: "bold",
-    color: "#007AFF",
   },
   intervalText: {
     fontSize: 16,
-    color: "#666",
     marginLeft: 5,
   },
   infoSection: {
@@ -642,30 +794,25 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
-    color: "#666",
     flex: 1,
   },
   infoValue: {
     fontSize: 14,
     fontWeight: "500",
-    color: "#333",
     flex: 1,
     textAlign: "right",
   },
   cancelButton: {
-    backgroundColor: "#FF3B30",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
   },
   cancelButtonText: {
-    color: "#fff",
     fontSize: 15,
     fontWeight: "600",
   },
   warningText: {
     fontSize: 13,
-    color: "#856404",
   },
   actionsContainer: {
     gap: 10,
@@ -673,41 +820,14 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   primaryButton: {
-    backgroundColor: "#007AFF",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",
-  },
-  secondaryButton: {
-    backgroundColor: "#fff",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-    borderWidth: 1.5,
-    borderColor: "#007AFF",
-  },
-  secondaryButtonText: {
-    color: "#007AFF",
-    fontSize: 15,
-    fontWeight: "600",
-  },
-  warningButton: {
-    backgroundColor: "#FF9500",
-    paddingVertical: 14,
-    borderRadius: 10,
-    alignItems: "center",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 15,
-    fontWeight: "600",
   },
   warningBox: {
-    backgroundColor: "#FFF3CD",
     padding: 12,
     borderRadius: 8,
     borderLeftWidth: 4,
-    borderLeftColor: "#FF9500",
     marginTop: 10,
   },
 });

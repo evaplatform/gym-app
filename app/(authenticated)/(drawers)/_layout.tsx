@@ -236,9 +236,13 @@ export default function DrawerLayout() {
         <Drawer.Screen
           name="subscriptionByUserDrawer"
           options={{
-            headerTitle: t(AppMessagesEnum.MY_SUBSCRIPTION),
             drawerLabel: t(AppMessagesEnum.MY_SUBSCRIPTION),
             title: t(AppMessagesEnum.MY_SUBSCRIPTION),
+            drawerItemStyle: {
+              display: unifiedGroup.drawerMenu.mySubscription?.permitted
+                ? "flex"
+                : "none",
+            },
           }}
         />
 

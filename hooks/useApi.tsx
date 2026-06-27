@@ -4,6 +4,7 @@ import { useCallback, useState } from "react";
 import Toast from "react-native-toast-message";
 
 type CatchFunctionType = (
+  toast: typeof Toast,
   e: any,
   callbackCatch?: (e: any) => Promise<boolean | void> | boolean | void
 ) => void;
@@ -25,7 +26,7 @@ export function useApi() {
       log("error-log", error);
       let treatOnlyCallback = false;
       if (callbackCatch) {
-        treatOnlyCallback = (await callbackCatch(e)) ?? false;
+        treatOnlyCallback = (await callbackCatch(Toast, e)) ?? false;
       }
 
       if (treatOnlyCallback) return;

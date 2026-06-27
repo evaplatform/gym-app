@@ -1,12 +1,5 @@
-import React, { useState } from "react";
-import {
-  View,
-  StyleSheet,
-  Alert,
-  ScrollView,
-  ActivityIndicator,
-  TouchableOpacity,
-} from "react-native";
+import React, { useMemo, useState } from "react";
+import { View, StyleSheet, Alert, ScrollView } from "react-native";
 import { CardField, useStripe } from "@stripe/stripe-react-native";
 import Text from "@/components/custom/Text";
 import { PRICE_ID } from "@/shared/constants/envConstants";
@@ -14,8 +7,20 @@ import { RootReduxState } from "@/redux";
 import { useDispatch, useSelector } from "react-redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
 import { setSubscriptionListState } from "@/redux/slices/subscriptionSlice";
+import { useTranslation } from "@/hooks/useTranslation";
+import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
+import useCustomStyle from "@/hooks/useCustomStyle";
+import { Button } from "@/components/custom/Button";
+import { SeverityEnum } from "@/shared/enum/SeverityEnum";
+import { useApi } from "@/hooks/useApi";
+import Toast from "react-native-toast-message";
+import { useRouter } from "expo-router";
 
 export default function CheckoutScreen() {
+  const router = useRouter();
+  const { call } = useApi();
+  const { t } = useTranslation();
+  const { colors } = useCustomStyle();
   const { user } = useSelector((state: RootReduxState) => state.user);
   const dispatch = useDispatch();
   const { confirmSetupIntent } = useStripe();
@@ -27,41 +32,100 @@ export default function CheckoutScreen() {
     customerId: string;
   } | null>(null);
 
+  const customStyle = useMemo(
+    () => ({
+      container: {
+        backgroundColor: colors.background,
+      },
+      subtitle: {
+        color: colors.gray600,
+      },
+      card: {
+        backgroundColor: colors.gray100,
+      },
+      hint: {
+        color: colors.gray400,
+      },
+      infoContainer: {
+        backgroundColor: colors.gray200,
+      },
+      infoText: {
+        color: colors.notification.info,
+      },
+      cardField: {
+        backgroundColor: colors.background,
+        textColor: colors.text,
+        borderColor: colors.border,
+        placeholderColor: colors.gray300,
+        borderWidth: 1,
+        borderRadius: 8,
+        fontSize: 16,
+      },
+    }),
+    [colors],
+  );
+
   // Passo 1: Criar Setup Intent
   const handleCreateSetupIntent = async () => {
     if (!user?.email) {
-      Alert.alert("Erro", "Usuário não autenticado");
+      Toast.show({
+        type: "error",
+        text1: t(AppMessagesEnum.ERROR),
+        text2: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
+      });
       return;
     }
 
     setLoading(true);
-    try {
-      const response = await PaymentSubscriptionService.setupIntent({
-        email: user.email,
-      });
 
-      setSetupData({
-        clientSecret: response.clientSecret,
-        customerId: response.customerId,
-      });
+    call({
+      loading: true,
+      try: async (toast) => {
+        const response = await PaymentSubscriptionService.setupIntent({
+          email: user.email,
+        });
 
-      Alert.alert("Sucesso", "Pronto! Agora preencha os dados do cartão.");
-    } catch (error: any) {
-      Alert.alert("Erro", error.message || "Erro ao iniciar pagamento");
-    } finally {
-      setLoading(false);
-    }
+        setSetupData({
+          clientSecret: response.clientSecret,
+          customerId: response.customerId,
+        });
+
+        toast.show({
+          type: "success",
+          text1: t(AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_SUCCESS),
+        });
+      },
+      catch: (toast, error: any) => {
+        toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.ERROR),
+          text2:
+            error.message ||
+            t(AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_ERROR_MESSAGE),
+        });
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   };
 
   // Passo 2: Confirmar Setup Intent e Criar Assinatura
   const handleSubscribe = async () => {
     if (!setupData) {
-      Alert.alert("Erro", 'Clique em "Iniciar Pagamento" primeiro');
+      Toast.show({
+        type: "error",
+        text1: t(AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST),
+      });
+
       return;
     }
 
     if (!cardComplete) {
-      Alert.alert("Atenção", "Preencha todos os dados do cartão");
+      Toast.show({
+        type: "info",
+        text1: t(AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA),
+      });
       return;
     }
 
@@ -76,13 +140,22 @@ export default function CheckoutScreen() {
       );
 
       if (error) {
-        Alert.alert("Erro no Cartão", error.message);
+        Toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.SUBSCRIPTION_CARD_ERROR),
+          text2: error.message,
+        });
+
         setLoading(false);
         return;
       }
 
       if (!setupIntent?.paymentMethodId) {
-        Alert.alert("Erro", "Não foi possível processar o cartão");
+        Toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD),
+        });
+
         setLoading(false);
         return;
       }
@@ -96,7 +169,10 @@ export default function CheckoutScreen() {
         });
 
       if (!user?.email) {
-        Alert.alert("Erro", "Usuário não autenticado");
+        Toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
+        });
         return;
       }
 
@@ -106,64 +182,58 @@ export default function CheckoutScreen() {
 
       dispatch(setSubscriptionListState(response.subscriptions));
 
-      Alert.alert(
-        "🎉 Sucesso!",
-        `Assinatura criada!\nID: ${subscription.subscriptionId}\nStatus: ${subscription.status}`,
-        [
-          {
-            text: "OK",
-            onPress: () => {
-              // Navegar para tela de sucesso ou home
-              // navigation.navigate('Home');
-            },
+      const alertMessage = `${t(AppMessagesEnum.SUBSCRIPTION_CREATED)}\n ${t(AppMessagesEnum.ID)}: ${subscription.subscriptionId}\n${t(AppMessagesEnum.STATUS)}: ${subscription.status}`;
+
+      Alert.alert(`🎉 ${t(AppMessagesEnum.SUCCESS)}!`, alertMessage, [
+        {
+          text: t(AppMessagesEnum.OK),
+          onPress: () => {
+            router.back();
           },
-        ],
-      );
+        },
+      ]);
     } catch (error: any) {
-      Alert.alert("Erro", error.message || "Erro ao criar assinatura");
+      Toast.show({
+        type: "error",
+        text1: t(AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE),
+      });
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.content}>
+    <ScrollView
+      style={[styles.container, customStyle.container]}
+      contentContainerStyle={styles.content}
+    >
       <View style={styles.header}>
         <Text style={styles.title}>Assinar Plano Premium</Text>
-        <Text style={styles.subtitle}>R$ 1,00 / mês</Text>
+        <Text style={[styles.subtitle, customStyle.subtitle]}>
+          R$ 1,00 / mês
+        </Text>
       </View>
 
       {/* Passo 1: Iniciar Pagamento */}
       {!setupData && (
-        <TouchableOpacity
-          style={[styles.button, styles.primaryButton]}
+        <Button
+          title={t(AppMessagesEnum.SUBSCRIPTION_START_PAYMENT)}
           onPress={handleCreateSetupIntent}
+          severity={SeverityEnum.PRIMARY}
           disabled={loading}
-        >
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.buttonText}>Iniciar Pagamento</Text>
-          )}
-        </TouchableOpacity>
+        />
       )}
 
       {/* Passo 2: Formulário do Cartão */}
       {setupData && (
         <>
           <View style={styles.cardContainer}>
-            <Text style={styles.label}>Dados do Cartão</Text>
+            <Text style={styles.label}>
+              {t(AppMessagesEnum.SUBSCRIPTION_CARD_DATA)}
+            </Text>
             <CardField
               postalCodeEnabled={false}
-              cardStyle={{
-                backgroundColor: "#FFFFFF",
-                textColor: "#000000", // ← ADICIONE
-                borderColor: "#DDDDDD", // ← ADICIONE
-                borderWidth: 1,
-                borderRadius: 8,
-                fontSize: 16,
-                placeholderColor: "#999999", // ← ADICIONE
-              }}
+              cardStyle={customStyle.cardField}
               style={styles.cardField}
               onCardChange={(cardDetails) => {
                 setCardComplete(cardDetails.complete);
@@ -171,36 +241,28 @@ export default function CheckoutScreen() {
             />
           </View>
 
-          <TouchableOpacity
-            style={[
-              styles.button,
-              styles.successButton,
-              !cardComplete && styles.buttonDisabled,
-            ]}
+          <Button
+            title={`${t(AppMessagesEnum.SUBSCRIPTION_CONFIRM_SUBSCRIPTION)} - R$ 1,00/mês`}
             onPress={handleSubscribe}
+            severity={SeverityEnum.PRIMARY}
             disabled={loading || !cardComplete}
-          >
-            {loading ? (
-              <ActivityIndicator color="#fff" />
-            ) : (
-              <Text style={styles.buttonText}>
-                Confirmar Assinatura (R$ 1,00/mês)
-              </Text>
-            )}
-          </TouchableOpacity>
+          />
 
-          <Text style={styles.hint}>
-            💳 Use o cartão de teste: 4242 4242 4242 4242
+          <Text style={[styles.hint, customStyle.hint]}>
+            💳 {t(AppMessagesEnum.SUBSCRIPTION_USE_CARD_DATA)}: 4242 4242 4242
+            4242
           </Text>
         </>
       )}
 
       {/* Informações */}
-      <View style={styles.infoContainer}>
-        <Text style={styles.infoTitle}>ℹ️ Informações</Text>
-        <Text style={styles.infoText}>
-          • Cobrança mensal automática{"\n"}• Cancele quando quiser{"\n"}•
-          Primeiro mês: R$ 1,00{"\n"}• Ambiente de teste
+      <View style={[styles.infoContainer, customStyle.infoContainer]}>
+        <Text style={styles.infoTitle}>ℹ️ {t(AppMessagesEnum.INFO)}</Text>
+        <Text style={[styles.infoText, customStyle.infoText]}>
+          • {t(AppMessagesEnum.SUBSCRIPTION_AUTO_RENEW)}
+          {"\n"}• {t(AppMessagesEnum.SUBSCRIPTION_CANCEL_ANYTIME)}
+          {"\n"}• {t(AppMessagesEnum.SUBSCRIPTION_FIRST_MONTH)}
+          {"\n"}• {t(AppMessagesEnum.SUBSCRIPTION_TEST_ENVIRONMENT)}
         </Text>
       </View>
     </ScrollView>
@@ -210,7 +272,6 @@ export default function CheckoutScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
   },
   content: {
     padding: 20,
@@ -226,7 +287,6 @@ const styles = StyleSheet.create({
   },
   subtitle: {
     fontSize: 18,
-    color: "#666",
   },
   cardContainer: {
     marginBottom: 20,
@@ -241,40 +301,16 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   card: {
-    backgroundColor: "#fff",
     borderRadius: 8,
-  },
-  button: {
-    height: 50,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 15,
-  },
-  primaryButton: {
-    backgroundColor: "#007AFF",
-  },
-  successButton: {
-    backgroundColor: "#34C759",
-  },
-  buttonDisabled: {
-    backgroundColor: "#ccc",
-  },
-  buttonText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
   },
   hint: {
     textAlign: "center",
-    color: "#666",
     fontSize: 14,
     marginTop: 10,
   },
   infoContainer: {
     marginTop: 30,
     padding: 15,
-    backgroundColor: "#fff",
     borderRadius: 8,
   },
   infoTitle: {
@@ -284,7 +320,6 @@ const styles = StyleSheet.create({
   },
   infoText: {
     fontSize: 14,
-    color: "#666",
     lineHeight: 22,
   },
 });

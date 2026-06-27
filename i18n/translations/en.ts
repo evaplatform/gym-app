@@ -2,6 +2,16 @@ import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
 
 export const enAppMessages: Record<AppMessagesEnum, string> = {
   //#region General Messages
+  [AppMessagesEnum.TRY]: "Try",
+  [AppMessagesEnum.NOT]: "No",
+  [AppMessagesEnum.YES]: "Yes",
+  [AppMessagesEnum.YES_CANCEL]: "Yes, cancel",
+  [AppMessagesEnum.TRY_AGAIN]: "Try Again",
+  [AppMessagesEnum.ATTENTION]: "Attention",
+  [AppMessagesEnum.OK]: "OK",
+  [AppMessagesEnum.INFO]: "Information",
+  [AppMessagesEnum.STATUS]: "Status",
+  [AppMessagesEnum.ID]: "ID",
   [AppMessagesEnum.LANGUAGE_SELECTOR_LABEL]: "Select Language",
   [AppMessagesEnum.SUCCESS]: "Success",
   [AppMessagesEnum.ERROR]: "Error",
@@ -38,7 +48,13 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.CONFIRM_TEXT]: "Are you sure you want to proceed?",
   [AppMessagesEnum.INTERNET_CONNECTION_ERROR]:
     "Internet connection error. Please check your connection and try again.",
+  [AppMessagesEnum.CARD]: "Card",
   // #endregion General Messages
+
+  // #region calendar
+  [AppMessagesEnum.MONTH]: "Month",
+  [AppMessagesEnum.YEAR]: "Year",
+  // #endregion calendar
 
   // #region Firebase
   [AppMessagesEnum.FIREBASE_BIG_FILE]:
@@ -294,6 +310,66 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Unpaid",
   [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Canceling",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Trialing",
+  [AppMessagesEnum.SUBSCRIPTION_PLAN_PREMIUM]: "Premium Plan",
+  [AppMessagesEnum.SUBSCRIPTION_START_DATE]: "Start Date",
+  [AppMessagesEnum.SUBSCRIPTION_NEXT_BILLING_DATE]: "Next Billing Date",
+  [AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL]: "Valid Until",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELED_AT]: "Canceled At",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL]: "Cancel Subscription",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL_WARNING]:
+    "You will lose access to premium benefits. Are you sure?",
+  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT]: "Retry Payment",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD]: "Update Card",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE]: "Reactivate Subscription",
+  [AppMessagesEnum.SUBSCRIPTION_PAST_DUE_WARNING]:
+    "Payment overdue. Update your card or try again.",
+  [AppMessagesEnum.SUBSCRIPTION_WILL_CANCEL_WARNING]:
+    "Your subscription will be canceled on",
+  [AppMessagesEnum.SUBSCRIPTION_LOADING]: "Loading subscriptions...",
+  [AppMessagesEnum.SUBSCRIPTION_NO_SUBSCRIPTIONS]: "No subscriptions",
+  [AppMessagesEnum.SUBSCRIPTION_NO_ACTIVE_SUBSCRIPTIONS]:
+    "You do not have any active subscriptions.",
+  [AppMessagesEnum.SUBSCRIPTION_SUBSCRIBE_NOW]: "Subscribe Now",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_DESCRIPTION]:
+    "Enter the new credit card details",
+  [AppMessagesEnum.SUBSCRIPTION_START_PAYMENT]: "Start Payment",
+  [AppMessagesEnum.SUBSCRIPTION_CARD_DATA]: "Card Data",
+  [AppMessagesEnum.SUBSCRIPTION_AUTO_RENEW]: "Automatic Monthly Billing",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL_ANYTIME]: "Cancel Anytime",
+  [AppMessagesEnum.SUBSCRIPTION_FIRST_MONTH]: "First Month",
+  [AppMessagesEnum.SUBSCRIPTION_TEST_ENVIRONMENT]: "Test Environment",
+  [AppMessagesEnum.SUBSCRIPTION_CONFIRM_SUBSCRIPTION]: "Confirm Subscription",
+  [AppMessagesEnum.SUBSCRIPTION_USE_CARD_DATA]: "Use the test card",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_SUCCESS]:
+    "Setup Intent created successfully. Now fill in the card details.",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_ERROR_MESSAGE]:
+    "Error initiating payment. Please try again.",
+  [AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST]:
+    "Click 'Start Payment' first",
+  [AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA]: "Fill in all the card details",
+  [AppMessagesEnum.SUBSCRIPTION_CARD_ERROR]: "Card error.",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD]:
+    "It was not possible to process the card.",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT]:
+    "It was not possible to process the payment.",
+  [AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE]:
+    "Error creating subscription.",
+  [AppMessagesEnum.SUBSCRIPTION_CREATED]: "Subscription created!",
+  [AppMessagesEnum.SUBSCRIPTION_LOAD_ERROR]:
+    "Error loading subscriptions. Please try again.",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_SUCCESS]:
+    "Card updated successfully!",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS]:
+    "Payment processed successfully!",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING]: "Payment still pending",
+  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION]:
+    "Let's try to process the payment again with the current card.",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE]: "Reactivate Subscription",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION]:
+    "Do you want to reactivate your premium subscription?",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]:
+    "Subscription reactivated successfully!",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELED]: "Your subscription has been canceled",
   // #endregion Subscription
 
   // #region HistoryTab Labels
@@ -325,6 +401,7 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.USER_EXERCISE_USER_NOTES_LABEL]: "User Notes",
   [AppMessagesEnum.USER_EXERCISE_FINISH_TRAIN]: "Finalize training",
   [AppMessagesEnum.USER_EXERCISE_HAS_NOTES_LABEL]: "Includes User Notes?",
+  [AppMessagesEnum.USER_NOT_AUTHENTICATED]: "User not authenticated.",
   // #endregion HistoryTab Labels
 
   // #region GPS SCREEN
@@ -465,6 +542,7 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
     "Sidebar menu - Groups - Delete",
   [AppMessagesEnum.PERMISSION_DRAWER_MENU_GROUPS_UPDATE]:
     "Sidebar menu - Groups - Update",
-
+  [AppMessagesEnum.PERMISSION_DRAWER_MENU_MY_SUBSCRIPTION]:
+    "Sidebar menu - My Subscription",
   // #endregion Permissions
 };

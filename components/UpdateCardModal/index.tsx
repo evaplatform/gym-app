@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Modal,
   View,
@@ -9,6 +9,13 @@ import {
 } from "react-native";
 import { CardField, useStripe } from "@stripe/stripe-react-native";
 import Text from "@/components/custom/Text";
+import { useTranslation } from "@/hooks/useTranslation";
+import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
+import useCustomStyle from "@/hooks/useCustomStyle";
+import { hexToRgba } from "@/shared/utils/hexToRgba";
+import { SeverityEnum } from "@/shared/enum/SeverityEnum";
+import { Button } from "../custom/Button";
+import { useCardFieldStyle } from "@/hooks/useCardFieldStyle";
 
 interface UpdateCardModalProps {
   visible: boolean;
@@ -23,9 +30,42 @@ export default function UpdateCardModal({
   onSuccess,
   onCancel,
 }: UpdateCardModalProps) {
+  const cardStyle = useCardFieldStyle();
+  const { t } = useTranslation();
+  const { colors } = useCustomStyle();
   const { confirmSetupIntent } = useStripe();
   const [cardComplete, setCardComplete] = useState(false);
   const [loading, setLoading] = useState(false);
+
+  const customStyle = useMemo(() => {
+    return {
+      overlay: {
+        backgroundColor: hexToRgba(colors.background, 0.5),
+      },
+      modalContainer: {
+        backgroundColor: colors.gray200,
+      },
+      title: {
+        color: colors.text,
+      },
+      subtitle: {
+        color: colors.gray700,
+      },
+      card: {
+        backgroundColor: colors.backgroundSecondary,
+      },
+      hint: {
+        color: colors.gray700,
+      },
+      buttonContainer: {
+        backgroundColor: colors.background,
+      },
+      cardField: {
+        backgroundColor: colors.gray500,
+        color: colors.text,
+      },
+    };
+  }, [colors]);
 
   const handleConfirm = async () => {
     if (!cardComplete) {
@@ -68,59 +108,59 @@ export default function UpdateCardModal({
       transparent={true}
       onRequestClose={onCancel}
     >
-      <View style={styles.overlay}>
-        <View style={styles.modalContainer}>
+      <View style={[styles.overlay, customStyle.overlay]}>
+        <View style={[styles.modalContainer, customStyle.modalContainer]}>
           <View style={styles.header}>
-            <Text style={styles.title}>Atualizar Cartão</Text>
-            <TouchableOpacity onPress={onCancel} disabled={loading}>
-              <Text style={styles.closeButton}>✕</Text>
-            </TouchableOpacity>
+            <Text style={[styles.title, customStyle.title]}>
+              {t(AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD)}
+            </Text>
+            <Button
+              disabled={loading}
+              title={"✕"}
+              style={styles.closeButton}
+              onPress={onCancel}
+              severity={SeverityEnum.SECONDARY}
+            />
           </View>
 
-          <Text style={styles.subtitle}>
-            Digite os dados do novo cartão de crédito
+          <Text style={[styles.subtitle, customStyle.subtitle]}>
+            {t(AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_DESCRIPTION)}
           </Text>
 
           <View style={styles.cardContainer}>
             <CardField
               postalCodeEnabled={false}
-              placeholders={{
-                number: "4242 4242 4242 4242",
-              }}
-              cardStyle={styles.card}
-              style={styles.cardField}
               onCardChange={(cardDetails) => {
                 setCardComplete(cardDetails.complete);
+              }}
+              style={{ height: 50 }}
+              cardStyle={cardStyle}
+              placeholders={{
+                number: "4242 4242 4242 4242",
+                expiration: "MM/AA",
+                cvc: "CVC",
               }}
             />
           </View>
 
-          <Text style={styles.hint}>💳 Teste: 4242 4242 4242 4242</Text>
+          <Text style={[styles.hint, customStyle.hint]}>
+            💳 Teste: 4242 4242 4242 4242
+          </Text>
 
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.button, styles.cancelBtn]}
-              onPress={onCancel}
-              disabled={loading}
-            >
-              <Text style={styles.cancelBtnText}>Cancelar</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={[
-                styles.button,
-                styles.confirmBtn,
-                (!cardComplete || loading) && styles.buttonDisabled,
-              ]}
-              onPress={handleConfirm}
+          <View style={[styles.buttonContainer, customStyle.buttonContainer]}>
+            <Button
               disabled={!cardComplete || loading}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <Text style={styles.confirmBtnText}>Confirmar</Text>
-              )}
-            </TouchableOpacity>
+              title={t(AppMessagesEnum.CONFIRM_TITLE)}
+              onPress={handleConfirm}
+              severity={SeverityEnum.PRIMARY}
+            />
+
+            <Button
+              disabled={loading}
+              title={t(AppMessagesEnum.CANCEL)}
+              onPress={onCancel}
+              severity={SeverityEnum.DANGER}
+            />
           </View>
         </View>
       </View>
@@ -131,13 +171,11 @@ export default function UpdateCardModal({
 const styles = StyleSheet.create({
   overlay: {
     flex: 1,
-    backgroundColor: "rgba(0, 0, 0, 0.5)",
     justifyContent: "center",
     alignItems: "center",
     padding: 20,
   },
   modalContainer: {
-    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
     width: "100%",
@@ -152,16 +190,14 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 20,
     fontWeight: "bold",
-    color: "#333",
   },
   closeButton: {
     fontSize: 24,
-    color: "#999",
+    width: 40,
     padding: 4,
   },
   subtitle: {
     fontSize: 14,
-    color: "#666",
     marginBottom: 20,
   },
   cardContainer: {
@@ -171,18 +207,14 @@ const styles = StyleSheet.create({
     height: 50,
     marginVertical: 10,
   },
-  card: {
-    backgroundColor: "#f5f5f5",
-    borderRadius: 8,
-  },
+  card: { borderRadius: 8 },
   hint: {
     fontSize: 12,
-    color: "#999",
     textAlign: "center",
     marginBottom: 20,
   },
   buttonContainer: {
-    flexDirection: "row",
+    flexDirection: "column",
     gap: 12,
   },
   button: {
@@ -191,27 +223,5 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
-  },
-  cancelBtn: {
-    backgroundColor: "#fff",
-    borderWidth: 1.5,
-    borderColor: "#007AFF",
-  },
-  cancelBtnText: {
-    color: "#007AFF",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  confirmBtn: {
-    backgroundColor: "#007AFF",
-  },
-  confirmBtnText: {
-    color: "#fff",
-    fontSize: 16,
-    fontWeight: "600",
-  },
-  buttonDisabled: {
-    backgroundColor: "#ccc",
-    borderColor: "#ccc",
   },
 });
