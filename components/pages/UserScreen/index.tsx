@@ -22,6 +22,7 @@ import { Dispatch } from "@/shared/types/ReducerTypes";
 import { ExtendedUserState } from "@/app/(authenticated)/(stacks)/(userStacks)/userReducer";
 import { RootReduxState } from "@reduxjs/toolkit";
 import { useSelector } from "react-redux";
+import Checkbox from "@/components/custom/Checkbox";
 
 type UserScreenProps = {
   isLoading?: boolean;
@@ -44,6 +45,9 @@ export default function UserScreen({
   onRemove,
   isNewUser = false,
 }: UserScreenProps) {
+  const { user: currentUser } = useSelector(
+    (state: RootReduxState) => state.user,
+  );
   const { t } = useTranslation();
   const { createListItem } = useCreateListItem();
   const { unifiedGroup } = useSelector((state: RootReduxState) => state.group);
@@ -85,6 +89,22 @@ export default function UserScreen({
                   dispatch({ type: "name", payload: e.nativeEvent.text })
                 }
               />
+            </View>
+          )}
+
+          {currentUser?.isAdmin && (
+            <View style={styles.inputWrapper}>
+              {isLoading ? (
+                <Skeleton style={styles.inputWrapper} />
+              ) : (
+                <Checkbox
+                  label={t(AppMessagesEnum.USER_ADMINISTRATOR)}
+                  checked={user.isAdmin}
+                  onChange={(checked) => {
+                    dispatch({ type: "isAdmin", payload: checked });
+                  }}
+                />
+              )}
             </View>
           )}
 
