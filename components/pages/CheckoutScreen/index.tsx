@@ -15,6 +15,7 @@ import { SeverityEnum } from "@/shared/enum/SeverityEnum";
 import { useApi } from "@/hooks/useApi";
 import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
+import { replace } from "expo-router/build/global-state/routing";
 
 export default function CheckoutScreen() {
   const router = useRouter();
@@ -130,76 +131,80 @@ export default function CheckoutScreen() {
     }
 
     setLoading(true);
-    try {
-      // 1. Confirmar Setup Intent (coleta do cartão)
-      const { setupIntent, error } = await confirmSetupIntent(
-        setupData.clientSecret,
-        {
-          paymentMethodType: "Card",
-        },
-      );
-
-      if (error) {
-        Toast.show({
-          type: "error",
-          text1: t(AppMessagesEnum.SUBSCRIPTION_CARD_ERROR),
-          text2: error.message,
-        });
-
-        setLoading(false);
-        return;
-      }
-
-      if (!setupIntent?.paymentMethodId) {
-        Toast.show({
-          type: "error",
-          text1: t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD),
-        });
-
-        setLoading(false);
-        return;
-      }
-
-      // 2. Criar Assinatura no backend
-      const subscription =
-        await PaymentSubscriptionService.createFromSetupIntent({
-          customerId: setupData.customerId,
-          paymentMethodId: setupIntent.paymentMethodId,
-          priceId: PRICE_ID,
-        });
-
-      if (!user?.email) {
-        Toast.show({
-          type: "error",
-          text1: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
-        });
-        return;
-      }
-
-      const response = await PaymentSubscriptionService.listSubscriptionsByUser(
-        user.email,
-      );
-
-      dispatch(setSubscriptionListState(response.subscriptions));
-
-      const alertMessage = `${t(AppMessagesEnum.SUBSCRIPTION_CREATED)}\n ${t(AppMessagesEnum.ID)}: ${subscription.subscriptionId}\n${t(AppMessagesEnum.STATUS)}: ${subscription.status}`;
-
-      Alert.alert(`🎉 ${t(AppMessagesEnum.SUCCESS)}!`, alertMessage, [
-        {
-          text: t(AppMessagesEnum.OK),
-          onPress: () => {
-            router.back();
+    call({
+      loading: true,
+      try: async (toast) => {
+        // 1. Confirmar Setup Intent (coleta do cartão)
+        const { setupIntent, error } = await confirmSetupIntent(
+          setupData.clientSecret,
+          {
+            paymentMethodType: "Card",
           },
-        },
-      ]);
-    } catch (error: any) {
-      Toast.show({
-        type: "error",
-        text1: t(AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE),
-      });
-    } finally {
-      setLoading(false);
-    }
+        );
+
+        if (error) {
+          toast.show({
+            type: "error",
+            text1: t(AppMessagesEnum.SUBSCRIPTION_CARD_ERROR),
+            text2: error.message,
+          });
+
+          setLoading(false);
+          return;
+        }
+
+        if (!setupIntent?.paymentMethodId) {
+          toast.show({
+            type: "error",
+            text1: t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD),
+          });
+
+          setLoading(false);
+          return;
+        }
+
+        // 2. Criar Assinatura no backend
+        const subscription =
+          await PaymentSubscriptionService.createFromSetupIntent({
+            customerId: setupData.customerId,
+            paymentMethodId: setupIntent.paymentMethodId,
+            priceId: PRICE_ID,
+          });
+
+        if (!user?.email) {
+          toast.show({
+            type: "error",
+            text1: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
+          });
+          return;
+        }
+
+        const response =
+          await PaymentSubscriptionService.listSubscriptionsByUser(user.email);
+
+        dispatch(setSubscriptionListState(response.subscriptions));
+
+        const alertMessage = `${t(AppMessagesEnum.SUBSCRIPTION_CREATED)}\n ${t(AppMessagesEnum.ID)}: ${subscription.subscriptionId}\n${t(AppMessagesEnum.STATUS)}: ${subscription.status}`;
+
+        Alert.alert(`🎉 ${t(AppMessagesEnum.SUCCESS)}!`, alertMessage, [
+          {
+            text: t(AppMessagesEnum.OK),
+            onPress: () => {
+              //  router.replace("/(authenticated)/(drawers)/(tabs)/index/");
+            },
+          },
+        ]);
+      },
+      catch: (toast) => {
+        toast.show({
+          type: "error",
+          text1: t(AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE),
+        });
+      },
+      finally: () => {
+        setLoading(false);
+      },
+    });
   };
 
   return (
@@ -208,9 +213,11 @@ export default function CheckoutScreen() {
       contentContainerStyle={styles.content}
     >
       <View style={styles.header}>
-        <Text style={styles.title}>Assinar Plano Premium</Text>
+        <Text style={styles.title}>
+          {t(AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN)}
+        </Text>
         <Text style={[styles.subtitle, customStyle.subtitle]}>
-          R$ 1,00 / mês
+          R$ 1,00 / {t(AppMessagesEnum.MONTH)}
         </Text>
       </View>
 

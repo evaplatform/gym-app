@@ -4,7 +4,6 @@ import {
   StyleSheet,
   FlatList,
   Alert,
-  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import Text from "@/components/custom/Text";
@@ -26,8 +25,10 @@ import { Button } from "@/components/custom/Button";
 import { SeverityEnum } from "@/shared/enum/SeverityEnum";
 import Toast from "react-native-toast-message";
 import { useApi } from "@/hooks/useApi";
+import { useRouter } from "expo-router";
 
 export default function MySubscriptionsScreen() {
+  const router = useRouter();
   const { call } = useApi();
   const { t } = useTranslation();
   const { user } = useSelector((state: RootReduxState) => state.user);
@@ -133,6 +134,11 @@ export default function MySubscriptionsScreen() {
       loading: true,
       try: async (toast) => {
         setLoading(true);
+        setUpdateCardModal({
+          visible: false,
+          clientSecret: "",
+          subscriptionId: "",
+        });
 
         // Atualizar método de pagamento
         await PaymentSubscriptionService.updatePaymentMethod({
@@ -141,11 +147,6 @@ export default function MySubscriptionsScreen() {
         });
 
         // Fechar modal
-        setUpdateCardModal({
-          visible: false,
-          clientSecret: "",
-          subscriptionId: "",
-        });
 
         toast.show({
           type: "success",
@@ -377,10 +378,10 @@ export default function MySubscriptionsScreen() {
         backgroundColor: colors.backgroundSecondary,
       },
       emptyTitle: {
-        color: colors.gray500,
+        color: colors.gray700,
       },
       emptyText: {
-        color: colors.gray500,
+        color: colors.gray700,
       },
       card: {
         backgroundColor: colors.backgroundSecondary,
@@ -635,17 +636,6 @@ export default function MySubscriptionsScreen() {
     );
   };
 
-  // if (loading) {
-  //   return (
-  //     <View style={[styles.loadingContainer, customStyle.loadingContainer]}>
-  //       <ActivityIndicator size="large" color={colors.tint} />
-  //       <Text style={[styles.loadingText, customStyle.loadingText]}>
-  //         {t(AppMessagesEnum.SUBSCRIPTION_LOADING)}
-  //       </Text>
-  //     </View>
-  //   );
-  // }
-
   if (subscriptions.length === 0) {
     return (
       <View style={[styles.emptyContainer, customStyle.emptyContainer]}>
@@ -659,8 +649,9 @@ export default function MySubscriptionsScreen() {
         <Button
           title={t(AppMessagesEnum.SUBSCRIPTION_SUBSCRIBE_NOW)}
           onPress={() => {
-            // Navegar para tela de checkout
-            // navigation.navigate('Checkout');
+            router.push(
+              "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
+            );
           }}
         />
       </View>

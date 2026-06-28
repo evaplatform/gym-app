@@ -377,6 +377,8 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [ AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION]: "Deseja reativar sua assinatura premium?",
   [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]: "Assinatura reativada com sucesso!",
   [AppMessagesEnum.SUBSCRIPTION_CANCELED]: "Sua assinatura foi cancelada",
+  [AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN]: "Assinatura Premium",
+  [AppMessagesEnum.SUBSCRIBE_NOW]: "Assine Agora",
   // #endregion Subscription
 
   // #region HistoryTab Labels

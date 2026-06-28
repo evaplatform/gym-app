@@ -369,7 +369,10 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
     "Do you want to reactivate your premium subscription?",
   [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]:
     "Subscription reactivated successfully!",
-  [AppMessagesEnum.SUBSCRIPTION_CANCELED]: "Your subscription has been canceled",
+  [AppMessagesEnum.SUBSCRIPTION_CANCELED]:
+    "Your subscription has been canceled",
+  [AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN]: "Premium Plan",
+  [AppMessagesEnum.SUBSCRIBE_NOW]: "Subscribe Now",
   // #endregion Subscription
 
   // #region HistoryTab Labels
