@@ -15,7 +15,6 @@ export default function useAddUser() {
   const { call } = useApi();
   const router = useRouter();
 
-
   const [user, dispatch] = useReducer(userReducer, initialUser);
 
   const addUser = async () => {
@@ -27,7 +26,7 @@ export default function useAddUser() {
 
         request = { ...updatedUser };
 
-        request.refreshToken = '';
+        request.refreshToken = "";
 
         await UserServices.create(request);
 
@@ -38,7 +37,7 @@ export default function useAddUser() {
 
         router.back();
       },
-      catch: async (error) => {
+      catch: async (error: any) => {
         if (error.code === "storage/object-not-found") {
           return;
         }

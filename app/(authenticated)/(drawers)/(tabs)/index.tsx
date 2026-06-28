@@ -9,13 +9,19 @@ import { useSelector } from "react-redux";
 const backgroundImg = require("@/assets/images/home-background.png");
 
 export default function HomeScreen() {
+  const { user } = useSelector((state: RootReduxState) => state.user);
   const { subscriptionList } = useSelector(
     (state: RootReduxState) => state.subscription,
   );
+
   const router = useRouter();
 
   const getSubscriptionStatus = useCallback(
     (subscriptionList: ISubscriptionByUserData[] | null) => {
+      if (user && user.isAdmin) {
+        return;
+      }
+
       if (!subscriptionList || subscriptionList.length === 0) {
         router.push(
           "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
