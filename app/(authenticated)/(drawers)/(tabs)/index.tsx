@@ -1,5 +1,5 @@
 import { RootReduxState } from "@/redux";
-import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
+import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/interfaces";
 import { SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
 import { useFocusEffect, useRouter } from "expo-router";
 import { useCallback } from "react";

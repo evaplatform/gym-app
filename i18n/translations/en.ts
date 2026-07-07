@@ -2,6 +2,7 @@ import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
 
 export const enAppMessages: Record<AppMessagesEnum, string> = {
   //#region General Messages
+  [AppMessagesEnum.BACK]: "Back",
   [AppMessagesEnum.TRY]: "Try",
   [AppMessagesEnum.NOT]: "No",
   [AppMessagesEnum.YES]: "Yes",
@@ -373,6 +374,19 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
     "Your subscription has been canceled",
   [AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN]: "Premium Plan",
   [AppMessagesEnum.SUBSCRIBE_NOW]: "Subscribe Now",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_LABEL]: "Billing Day",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_SUBLABEL]:
+    "Select your preferred billing day",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE]: "Next Billing Date",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL]: "days remaining",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS]: "days",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION]: "No proration",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_REQUIRED]:
+    "Billing day is required.",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_METHOD_NOT_FOUND]:
+    "Payment method not found.",
+  [AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS]:
+    "Subscription created successfully!",
   // #endregion Subscription
 
   // #region HistoryTab Labels

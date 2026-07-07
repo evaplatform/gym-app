@@ -5,12 +5,12 @@ import {
   FlatList,
   Alert,
   RefreshControl,
+  ActivityIndicator,
 } from "react-native";
 import Text from "@/components/custom/Text";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReduxState } from "@/redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
-import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
 import { PRICE_ID } from "@/shared/constants/envConstants";
 import UpdateCardModal from "@/components/UpdateCardModal";
 import {
@@ -26,6 +26,7 @@ import { SeverityEnum } from "@/shared/enum/SeverityEnum";
 import Toast from "react-native-toast-message";
 import { useApi } from "@/hooks/useApi";
 import { useRouter } from "expo-router";
+import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/interfaces";
 
 export default function MySubscriptionsScreen() {
   const router = useRouter();
@@ -54,26 +55,29 @@ export default function MySubscriptionsScreen() {
     subscriptions: ISubscriptionByUserData[],
   ) => {
     const allSubscriptionAreCanceled = subscriptions.every(
-      (sub) => sub.status === "canceled",
+      (sub) => sub.status === SubscriptionsStatusEnum.CANCELED,
     );
 
-    if (allSubscriptionAreCanceled) {
-      const latestSubscription = subscriptions
-        .filter(
-          (
-            subscription,
-          ): subscription is ISubscriptionByUserData & {
-            canceled_at: number;
-          } => subscription.canceled_at !== null,
-        )
-        .reduce((latest, current) =>
-          current.canceled_at > latest.canceled_at ? current : latest,
-        );
+    if (allSubscriptionAreCanceled && subscriptions.length > 0) {
+      const canceledSubs = subscriptions.filter(
+        (sub): sub is ISubscriptionByUserData & { canceled_at: number } =>
+          sub.canceled_at !== null,
+      );
+
+      if (canceledSubs.length === 0) {
+        return subscriptions; // Retorna todas se nenhuma tem canceled_at
+      }
+
+      const latestSubscription = canceledSubs.reduce((latest, current) =>
+        current.canceled_at > latest.canceled_at ? current : latest,
+      );
 
       return [latestSubscription];
     }
 
-    return subscriptions.filter((sub) => sub.status !== "canceled");
+    return subscriptions.filter(
+      (sub) => sub.status !== SubscriptionsStatusEnum.CANCELED,
+    );
   };
 
   const loadSubscriptions = async () => {
@@ -459,6 +463,17 @@ export default function MySubscriptionsScreen() {
     };
 
     const priceInfo = getPriceInfo();
+
+    if (loading && subscriptions.length === 0) {
+      return (
+        <View style={[styles.loadingContainer, customStyle.loadingContainer]}>
+          <ActivityIndicator size="large" color={colors.tint} />
+          <Text style={[styles.loadingText, customStyle.loadingText]}>
+            {t(AppMessagesEnum.LOADING)}...
+          </Text>
+        </View>
+      );
+    }
 
     return (
       <View style={[styles.card, customStyle.card]}>

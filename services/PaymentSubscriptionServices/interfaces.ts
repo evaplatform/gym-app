@@ -12,6 +12,7 @@ export interface ICreateSubscriptionRequest {
   customerId: string;
   paymentMethodId: string;
   priceId: string;
+  billingDay?: number;
 }
 
 export interface ICreateSubscriptionResponse {
@@ -292,4 +293,23 @@ export interface IReactivateSubscriptionRequest {
   customerId: string;
   priceId: string;
   paymentMethodId?: string;
+}
+
+export interface IBillingDayPreviewRequest {
+  billingDay: number;
+  priceId: string;
+  email: string;
+}
+
+export interface IBillingDayPreviewResponse {
+  billingDay: number;
+  nextBillingDate: string;
+  daysUntilBilling: number;
+  prorationAmount: number;
+  currency: string;
+}
+
+export interface IUpdateBillingDayRequest {
+  subscriptionId: string;
+  billingDay: number;
 }

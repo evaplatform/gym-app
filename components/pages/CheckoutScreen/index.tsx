@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from "react";
-import { View, StyleSheet, Alert, ScrollView } from "react-native";
+import { View, StyleSheet, ScrollView } from "react-native";
 import { CardField, useStripe } from "@stripe/stripe-react-native";
 import Text from "@/components/custom/Text";
 import { PRICE_ID } from "@/shared/constants/envConstants";
@@ -13,9 +13,8 @@ import useCustomStyle from "@/hooks/useCustomStyle";
 import { Button } from "@/components/custom/Button";
 import { SeverityEnum } from "@/shared/enum/SeverityEnum";
 import { useApi } from "@/hooks/useApi";
-import Toast from "react-native-toast-message";
 import { useRouter } from "expo-router";
-import { replace } from "expo-router/build/global-state/routing";
+import BillingDayPicker from "@/components/custom/BillingDayPicker";
 
 export default function CheckoutScreen() {
   const router = useRouter();
@@ -26,8 +25,11 @@ export default function CheckoutScreen() {
   const dispatch = useDispatch();
   const { confirmSetupIntent } = useStripe();
 
+  const [billingDay, setBillingDay] = useState<number | undefined>(undefined);
   const [loading, setLoading] = useState(false);
   const [cardComplete, setCardComplete] = useState(false);
+
+  // ✅ setupData guarda o resultado do Passo 1
   const [setupData, setSetupData] = useState<{
     clientSecret: string;
     customerId: string;
@@ -40,9 +42,6 @@ export default function CheckoutScreen() {
       },
       subtitle: {
         color: colors.gray600,
-      },
-      card: {
-        backgroundColor: colors.gray100,
       },
       hint: {
         color: colors.gray400,
@@ -66,26 +65,31 @@ export default function CheckoutScreen() {
     [colors],
   );
 
-  // Passo 1: Criar Setup Intent
-  const handleCreateSetupIntent = async () => {
-    if (!user?.email) {
-      Toast.show({
-        type: "error",
-        text1: t(AppMessagesEnum.ERROR),
-        text2: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
-      });
-      return;
-    }
-
-    setLoading(true);
+  // ─────────────────────────────────────────────
+  // PASSO 1: Criar Setup Intent
+  // ─────────────────────────────────────────────
+  const handleCreateSetupIntent = () => {
+    if (!user?.email) return;
 
     call({
       loading: true,
       try: async (toast) => {
+        setLoading(true);
+
+        if (!billingDay) {
+          toast.show({
+            type: "error",
+            text1: t(AppMessagesEnum.ATTENTION),
+            text2: t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_REQUIRED),
+          });
+          return;
+        }
+
         const response = await PaymentSubscriptionService.setupIntent({
           email: user.email,
         });
 
+        // ✅ Salva para usar no Passo 2
         setSetupData({
           clientSecret: response.clientSecret,
           customerId: response.customerId,
@@ -111,94 +115,69 @@ export default function CheckoutScreen() {
     });
   };
 
-  // Passo 2: Confirmar Setup Intent e Criar Assinatura
-  const handleSubscribe = async () => {
-    if (!setupData) {
-      Toast.show({
-        type: "error",
-        text1: t(AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST),
-      });
+  // ─────────────────────────────────────────────
+  // PASSO 2: Confirmar cartão e criar assinatura
+  // ─────────────────────────────────────────────
+  const handleSubscribe = () => {
+    // ✅ Usa o setupData do Passo 1 (não cria novo Setup Intent)
+    if (!setupData) return;
 
-      return;
-    }
-
-    if (!cardComplete) {
-      Toast.show({
-        type: "info",
-        text1: t(AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA),
-      });
-      return;
-    }
-
-    setLoading(true);
     call({
       loading: true,
       try: async (toast) => {
-        // 1. Confirmar Setup Intent (coleta do cartão)
+        setLoading(true);
+
+        // 1. Confirmar Setup Intent com o cartão digitado no CardField
         const { setupIntent, error } = await confirmSetupIntent(
           setupData.clientSecret,
-          {
-            paymentMethodType: "Card",
-          },
+          { paymentMethodType: "Card" },
         );
 
         if (error) {
           toast.show({
             type: "error",
-            text1: t(AppMessagesEnum.SUBSCRIPTION_CARD_ERROR),
+            text1: t(AppMessagesEnum.ERROR),
             text2: error.message,
           });
-
-          setLoading(false);
           return;
         }
 
         if (!setupIntent?.paymentMethodId) {
           toast.show({
             type: "error",
-            text1: t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD),
+            text1: t(AppMessagesEnum.ERROR),
+            text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_METHOD_NOT_FOUND),
           });
-
-          setLoading(false);
           return;
         }
 
-        // 2. Criar Assinatura no backend
+        // 2. Criar assinatura com o billingDay e paymentMethod coletados
         const subscription =
           await PaymentSubscriptionService.createFromSetupIntent({
             customerId: setupData.customerId,
             paymentMethodId: setupIntent.paymentMethodId,
             priceId: PRICE_ID,
+            billingDay,
           });
 
-        if (!user?.email) {
-          toast.show({
-            type: "error",
-            text1: t(AppMessagesEnum.USER_NOT_AUTHENTICATED),
-          });
-          return;
-        }
+        // 3. Atualizar Redux com a nova assinatura
+        dispatch(setSubscriptionListState([subscription as any]));
 
-        const response =
-          await PaymentSubscriptionService.listSubscriptionsByUser(user.email);
+        toast.show({
+          type: "success",
+          text1: t(AppMessagesEnum.SUCCESS),
+          text2: t(AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS),
+        });
 
-        dispatch(setSubscriptionListState(response.subscriptions));
-
-        const alertMessage = `${t(AppMessagesEnum.SUBSCRIPTION_CREATED)}\n ${t(AppMessagesEnum.ID)}: ${subscription.subscriptionId}\n${t(AppMessagesEnum.STATUS)}: ${subscription.status}`;
-
-        Alert.alert(`🎉 ${t(AppMessagesEnum.SUCCESS)}!`, alertMessage, [
-          {
-            text: t(AppMessagesEnum.OK),
-            onPress: () => {
-              //  router.replace("/(authenticated)/(drawers)/(tabs)/index/");
-            },
-          },
-        ]);
+        // router.push(
+        //   "/(authenticated)/(stacks)/(subscriptionStacks)/mySubscriptions/",
+        // );
       },
-      catch: (toast) => {
+      catch: async (toast, error) => {
         toast.show({
           type: "error",
-          text1: t(AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE),
+          text1: t(AppMessagesEnum.ERROR),
+          text2: error.message,
         });
       },
       finally: () => {
@@ -212,6 +191,7 @@ export default function CheckoutScreen() {
       style={[styles.container, customStyle.container]}
       contentContainerStyle={styles.content}
     >
+      {/* Header */}
       <View style={styles.header}>
         <Text style={styles.title}>
           {t(AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN)}
@@ -221,17 +201,29 @@ export default function CheckoutScreen() {
         </Text>
       </View>
 
-      {/* Passo 1: Iniciar Pagamento */}
+      {/* Seletor de dia de cobrança — sempre visível */}
+      <BillingDayPicker
+        email={user?.email || ""}
+        priceId={PRICE_ID}
+        selectedDay={billingDay}
+        onChange={(day) => {
+          setBillingDay(day);
+          // ✅ Se trocar o dia depois de já ter criado o setupIntent, resetar
+          if (setupData) setSetupData(null);
+        }}
+      />
+
+      {/* PASSO 1: Botão de iniciar pagamento */}
       {!setupData && (
         <Button
           title={t(AppMessagesEnum.SUBSCRIPTION_START_PAYMENT)}
           onPress={handleCreateSetupIntent}
           severity={SeverityEnum.PRIMARY}
-          disabled={loading}
+          disabled={loading || !billingDay}
         />
       )}
 
-      {/* Passo 2: Formulário do Cartão */}
+      {/* PASSO 2: Formulário do cartão */}
       {setupData && (
         <>
           <View style={styles.cardContainer}>
@@ -253,6 +245,15 @@ export default function CheckoutScreen() {
             onPress={handleSubscribe}
             severity={SeverityEnum.PRIMARY}
             disabled={loading || !cardComplete}
+            style={{ marginBottom: 10 }}
+          />
+
+          {/* Botão para voltar e trocar o dia */}
+          <Button
+            title={t(AppMessagesEnum.BACK)}
+            onPress={() => setSetupData(null)}
+            severity={SeverityEnum.SECONDARY}
+            disabled={loading}
           />
 
           <Text style={[styles.hint, customStyle.hint]}>
@@ -282,6 +283,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
+    paddingBottom: 40,
   },
   header: {
     alignItems: "center",
@@ -307,13 +309,11 @@ const styles = StyleSheet.create({
     height: 50,
     marginVertical: 10,
   },
-  card: {
-    borderRadius: 8,
-  },
   hint: {
     textAlign: "center",
     fontSize: 14,
     marginTop: 10,
+    marginBottom: 10,
   },
   infoContainer: {
     marginTop: 30,

@@ -4,6 +4,7 @@ import { AppMessagesEnum } from "@/shared/enum/AppMessagesEnum";
 
 export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   //#region General Messages
+  [AppMessagesEnum.BACK]: "Voltar",
   [AppMessagesEnum.TRY]: "Tentar",
   [AppMessagesEnum.NOT]: "Não",
   [AppMessagesEnum.YES]: "Sim",
@@ -324,11 +325,16 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_CANCEL_ANYTIME]: "Cancele a Qualquer Momento",
   [AppMessagesEnum.SUBSCRIPTION_FIRST_MONTH]: "Primeiro Mês",
   [AppMessagesEnum.SUBSCRIPTION_TEST_ENVIRONMENT]: "Ambiente de Teste",
-  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_SUCCESS]: "Pronto! Agora preencha os dados do cartão.",
-  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_ERROR_MESSAGE]: "Erro ao iniciar pagamento.",
-  [AppMessagesEnum.SUBSCRIPTION_LOAD_ERROR]: "Não foi possível carregar assinaturas",
-  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_SUCCESS]: "Cartão atualizado com sucesso!",
-  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS]: "Pagamento processado com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_SUCCESS]:
+    "Pronto! Agora preencha os dados do cartão.",
+  [AppMessagesEnum.SUBSCRIPTION_SETUP_INTENT_ERROR_MESSAGE]:
+    "Erro ao iniciar pagamento.",
+  [AppMessagesEnum.SUBSCRIPTION_LOAD_ERROR]:
+    "Não foi possível carregar assinaturas",
+  [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD_SUCCESS]:
+    "Cartão atualizado com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS]:
+    "Pagamento processado com sucesso!",
   // #endregion Drawer Labels
 
   // #region Subscription
@@ -345,7 +351,8 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL]: "Válido Até",
   [AppMessagesEnum.SUBSCRIPTION_CANCELED_AT]: "Cancelada em",
   [AppMessagesEnum.SUBSCRIPTION_CANCEL]: "Cancelar Assinatura",
-  [AppMessagesEnum.SUBSCRIPTION_CANCEL_WARNING]: "Você perderá acesso aos benefícios premium. Tem certeza?",
+  [AppMessagesEnum.SUBSCRIPTION_CANCEL_WARNING]:
+    "Você perderá acesso aos benefícios premium. Tem certeza?",
   [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT]: "Tentar Pagamento",
   [AppMessagesEnum.SUBSCRIPTION_UPDATE_CARD]: "Trocar Cartão",
   [AppMessagesEnum.SUBSCRIPTION_REACTIVATE]: "Reativar Assinatura",
@@ -364,21 +371,40 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_CARD_DATA]: "Dados do Cartão",
   [AppMessagesEnum.SUBSCRIPTION_CONFIRM_SUBSCRIPTION]: "Confirmar Assinatura",
   [AppMessagesEnum.SUBSCRIPTION_USE_CARD_DATA]: "Use o cartão de teste",
-  [AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST]: "Clique em \"Iniciar Pagamento\" primeiro",
-  [AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA]: "Preencha todos os dados do cartão",
+  [AppMessagesEnum.SUBSCRIPTION_CLICK_START_PAYMENT_FIRST]:
+    'Clique em "Iniciar Pagamento" primeiro',
+  [AppMessagesEnum.SUBSCRIPTION_FILL_CARD_DATA]:
+    "Preencha todos os dados do cartão",
   [AppMessagesEnum.SUBSCRIPTION_CARD_ERROR]: "Erro no cartão",
-  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD]: "Não foi possível processar o cartão",
-  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT]: "Não foi possível processar o pagamento",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_CARD]:
+    "Não foi possível processar o cartão",
+  [AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT]:
+    "Não foi possível processar o pagamento",
   [AppMessagesEnum.SUBSCRIPTION_ERROR_TO_SUBSCRIBE]: "Erro ao criar assinatura",
   [AppMessagesEnum.SUBSCRIPTION_CREATED]: "Assinatura criada!",
   [AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING]: "Pagamento ainda pendente",
-  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION]: "Vamos tentar processar o pagamento novamente com o cartão atual.",
-  [ AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE]: "Reativar Assinatura",
-  [ AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION]: "Deseja reativar sua assinatura premium?",
-  [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]: "Assinatura reativada com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION]:
+    "Vamos tentar processar o pagamento novamente com o cartão atual.",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE]: "Reativar Assinatura",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION]:
+    "Deseja reativar sua assinatura premium?",
+  [AppMessagesEnum.SUBSCRIPTION_REACTIVATED_SUCCESS]:
+    "Assinatura reativada com sucesso!",
   [AppMessagesEnum.SUBSCRIPTION_CANCELED]: "Sua assinatura foi cancelada",
   [AppMessagesEnum.SUBSCRIPTION_PREMIUM_PLAIN]: "Assinatura Premium",
   [AppMessagesEnum.SUBSCRIBE_NOW]: "Assine Agora",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_LABEL]: "Dia de Cobrança",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_SUBLABEL]:
+    "Escolha o dia do mês em que será cobrado (máx. dia 28)",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE]:
+    "Próxima Data de Cobrança",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL]: "dias restantes",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS]:
+    "Subtítulo dos dias restantes",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION]: "Sem prorrateio",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_REQUIRED]: "O dia de cobrança é obrigatório.",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_METHOD_NOT_FOUND]: "Método de pagamento não encontrado.",
+  [AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS]: "Assinatura criada com sucesso!",
   // #endregion Subscription
 
   // #region HistoryTab Labels

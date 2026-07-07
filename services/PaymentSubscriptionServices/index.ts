@@ -1,5 +1,7 @@
 import { get, post, put, remove } from "../api";
 import {
+  IBillingDayPreviewRequest,
+  IBillingDayPreviewResponse,
   ICreateSubscriptionRequest,
   ICreateSubscriptionResponse,
   IReactivateSubscriptionRequest,
@@ -7,8 +9,9 @@ import {
   ISetupIntentRequest,
   ISetupIntentResponse,
   ISubscriptionByUserResponse,
+  IUpdateBillingDayRequest,
   IUpdatePaymentMethodRequest,
-} from "./intefaces";
+} from "./interfaces";
 
 export class PaymentSubscriptionService {
   static async setupIntent(body: ISetupIntentRequest) {
@@ -42,7 +45,6 @@ export class PaymentSubscriptionService {
     );
   }
 
-  // Tentar cobrar novamente (para assinaturas past_due)
   static async retryPayment(subscriptionId: string) {
     return post<IRetryPaymentRequest, { message: string; status: string }>(
       `/payment-subscription/${subscriptionId}/retry-payment`,
@@ -50,10 +52,25 @@ export class PaymentSubscriptionService {
     );
   }
 
-  // Reativar assinatura cancelada
   static async reactivateSubscription(body: IReactivateSubscriptionRequest) {
     return post<IReactivateSubscriptionRequest, ICreateSubscriptionResponse>(
       "/payment-subscription/reactivate",
+      body,
+    );
+  }
+
+  // ── Billing Day ──────────────────────────────
+
+  static async previewBillingDay(body: IBillingDayPreviewRequest) {
+    return post<IBillingDayPreviewRequest, IBillingDayPreviewResponse>(
+      "/payment-subscription/billing-day/preview",
+      body,
+    );
+  }
+
+  static async updateBillingDay(body: IUpdateBillingDayRequest) {
+    return put<IUpdateBillingDayRequest, { message: string }>(
+      `/payment-subscription/${body.subscriptionId}/billing-day`,
       body,
     );
   }
