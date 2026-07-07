@@ -387,6 +387,11 @@ export const enAppMessages: Record<AppMessagesEnum, string> = {
     "Payment method not found.",
   [AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS]:
     "Subscription created successfully!",
+  [AppMessagesEnum.BILLING_DAY_UPDATE_TITLE]: "Change Billing Day",
+  [AppMessagesEnum.BILLING_DAY_EVERY_DAY]: "Every day",
+  [AppMessagesEnum.BILLING_DAY_UPDATE_SUCCESS]:
+    "Billing day updated successfully!",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_SAVE]: "Save new day",
   // #endregion Subscription
 
   // #region HistoryTab Labels

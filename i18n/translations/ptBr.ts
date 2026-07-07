@@ -343,7 +343,7 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_STATUS_PAST_DUE]: "Atrasada",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_INCOMPLETE]: "Incompleta",
   [AppMessagesEnum.SUBSCRIPTION_STATUS_UNPAID]: "Não Paga",
-  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Em Teste",
+  [AppMessagesEnum.SUBSCRIPTION_STATUS_TRIALING]: "Aguardando cobrança",
   [AppMessagesEnum.SUBSCRIPTION_CANCELING]: "Cancelando",
   [AppMessagesEnum.SUBSCRIPTION_PLAN_PREMIUM]: "Plano Premium",
   [AppMessagesEnum.SUBSCRIPTION_START_DATE]: "Data de Início",
@@ -402,9 +402,17 @@ export const ptBrAppMessages: Record<AppMessagesEnum, string> = {
   [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS]:
     "Subtítulo dos dias restantes",
   [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION]: "Sem prorrateio",
-  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_REQUIRED]: "O dia de cobrança é obrigatório.",
-  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_METHOD_NOT_FOUND]: "Método de pagamento não encontrado.",
-  [AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS]: "Assinatura criada com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_REQUIRED]:
+    "O dia de cobrança é obrigatório.",
+  [AppMessagesEnum.SUBSCRIPTION_PAYMENT_METHOD_NOT_FOUND]:
+    "Método de pagamento não encontrado.",
+  [AppMessagesEnum.SUBSCRIPTION_CREATED_SUCCESS]:
+    "Assinatura criada com sucesso!",
+  [AppMessagesEnum.BILLING_DAY_UPDATE_TITLE]: "Alterar dia de cobrança",
+  [AppMessagesEnum.BILLING_DAY_EVERY_DAY]: "Todo dia",
+  [AppMessagesEnum.BILLING_DAY_UPDATE_SUCCESS]:
+    "Dia de cobrança atualizado com sucesso!",
+  [AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_SAVE]: "Salvar novo dia",
   // #endregion Subscription
 
   // #region HistoryTab Labels
