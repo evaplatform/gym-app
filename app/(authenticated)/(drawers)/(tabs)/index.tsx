@@ -25,15 +25,14 @@ export default function HomeScreen() {
         return;
       }
 
-      if (isSubscriptionLoading || !isInitialLoadingFinished) {
+      if (isSubscriptionLoading || (!isInitialLoadingFinished && !subscriptionList)) {
         return;
       }
 
       if (!subscriptionList || subscriptionList.length === 0) {
-        router.push(
+        return router.push(
           "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
         );
-        return;
       }
 
       const hasActiveSubscription = subscriptionList.some((subscription) =>
@@ -54,9 +53,8 @@ export default function HomeScreen() {
   useFocusEffect(
     useCallback(() => {
       getSubscriptionStatus(subscriptionList);
-    }, [subscriptionList, isSubscriptionLoading, isInitialLoadingFinished]),
+    }, [getSubscriptionStatus, subscriptionList]),
   );
-
 
   return (
     <View style={styles.container}>
