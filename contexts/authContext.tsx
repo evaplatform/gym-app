@@ -11,6 +11,7 @@ import {
   loginUser,
   logoutUser,
   setAuthHeaders,
+  setInitialLoadingFinished,
   setReady,
 } from "@/redux/slices/authSlice";
 import { resetAllUserDatabase } from "@/redux/actions/resetDatabaseActions";
@@ -77,6 +78,7 @@ export function AuthProvider({ children }: PropsWithChildren) {
       ).unwrap();
 
       dispatch(logoutUser()).unwrap();
+      dispatch(setInitialLoadingFinished(false));
 
       router.replace("/login");
     } catch (error) {

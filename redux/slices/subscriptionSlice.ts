@@ -1,7 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
+
 import { fetchSubscription } from "../actions/subscriptionActions";
+import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/interfaces";
 
 export interface SubscriptionState {
   subscriptionList: ISubscriptionByUserData[] | null;

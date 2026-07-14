@@ -36,6 +36,7 @@ import { TrainingByUserLocalService } from "@/database/services/TrainingByUserSe
 import { TrainingLocalService } from "@/database/services/TrainingLocalService";
 import { UserLocalService } from "@/database/services/UserLocalService";
 import { fetchSubscription } from "@/redux/actions/subscriptionActions";
+import { setInitialLoadingFinished } from "@/redux/slices/authSlice";
 
 type InitializeUserProps = {
   willFetchUser?: boolean;
@@ -113,10 +114,6 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
 
       await setDatabaseService(db);
       setInitProgress(20);
-
-      // Carregar usuário do banco de dados e definir credenciais
-      const user = db.userLocalService.getUser();
-      addCredentialIfItsLoggedIn(user);
 
       log("[INIT]-Serviço de banco de dados inicializado com sucesso", db);
     } else {
@@ -270,6 +267,13 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
 
         // Inicializar dados do usuário
         await initializeUserData({});
+
+        // Carregar usuário do banco de dados e definir credenciais
+        const user = db?.userLocalService.getUser();
+        if (user) {
+          addCredentialIfItsLoggedIn(user);
+          dispatch(setInitialLoadingFinished(true));
+        }
 
         log("[INIT]-Todas as inicializações concluídas com sucesso");
         setInitStatus("Inicialização concluída!");

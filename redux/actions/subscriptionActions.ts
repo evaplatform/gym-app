@@ -2,8 +2,8 @@ import { LocalDatabaseServices } from "@/database/types/LocalDatabaseServices";
 import { log } from "@/shared/utils/log";
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import { RootReduxState } from "../index";
-import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/intefaces";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
+import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/interfaces";
 
 /**
  * @description the first parameter from  async (input: Input, { getState, rejectWithValue })

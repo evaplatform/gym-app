@@ -10,8 +10,11 @@ const backgroundImg = require("@/assets/images/home-background.png");
 
 export default function HomeScreen() {
   const { user } = useSelector((state: RootReduxState) => state.user);
-  const { subscriptionList } = useSelector(
+  const { subscriptionList, loading: isSubscriptionLoading } = useSelector(
     (state: RootReduxState) => state.subscription,
+  );
+  const { isInitialLoadingFinished } = useSelector(
+    (state: RootReduxState) => state.auth
   );
 
   const router = useRouter();
@@ -19,6 +22,10 @@ export default function HomeScreen() {
   const getSubscriptionStatus = useCallback(
     (subscriptionList: ISubscriptionByUserData[] | null) => {
       if (user && user.isAdmin) {
+        return;
+      }
+
+      if (isSubscriptionLoading || !isInitialLoadingFinished) {
         return;
       }
 
@@ -41,13 +48,13 @@ export default function HomeScreen() {
         return;
       }
     },
-    [],
+    [router, user, isSubscriptionLoading],
   );
 
   useFocusEffect(
     useCallback(() => {
       getSubscriptionStatus(subscriptionList);
-    }, [subscriptionList]),
+    }, [subscriptionList, isSubscriptionLoading]),
   );
 
   return (
