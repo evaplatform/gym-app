@@ -2,7 +2,7 @@ import { RootReduxState } from "@/redux";
 import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/interfaces";
 import { SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
 import { useFocusEffect, useRouter } from "expo-router";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { StyleSheet, ImageBackground, View } from "react-native";
 import { useSelector } from "react-redux";
 
@@ -14,7 +14,7 @@ export default function HomeScreen() {
     (state: RootReduxState) => state.subscription,
   );
   const { isInitialLoadingFinished } = useSelector(
-    (state: RootReduxState) => state.auth
+    (state: RootReduxState) => state.auth,
   );
 
   const router = useRouter();
@@ -48,14 +48,15 @@ export default function HomeScreen() {
         return;
       }
     },
-    [router, user, isSubscriptionLoading],
+    [router, user, isSubscriptionLoading, isInitialLoadingFinished],
   );
 
   useFocusEffect(
     useCallback(() => {
       getSubscriptionStatus(subscriptionList);
-    }, [subscriptionList, isSubscriptionLoading]),
+    }, [subscriptionList, isSubscriptionLoading, isInitialLoadingFinished]),
   );
+
 
   return (
     <View style={styles.container}>
