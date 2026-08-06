@@ -67,32 +67,18 @@ export default function StacksLayout() {
   }, [authState.isLoggedIn, authState.loginMessage, dispatch]);
 
   // ✅ 1. PRIMEIRO: aguarda tudo carregar
-  log(
-    "authState:",
-    authState,
-    "isLoading:",
-    isLoading,
-    "isSubscriptionLoading:",
-    isSubscriptionLoading,
-  );
   if (!authState.isReady || isLoading || isSubscriptionLoading) {
     return null;
   }
 
-  log(
-    "StacksLayout: authState.isLoggedIn:",
-    authState.isLoggedIn,
-    "subscriptionList:",
-    subscriptionList,
-  );
   // ✅ 2. DEPOIS: verifica autenticação
   if (!authState.isLoggedIn) {
     return <Redirect href="/login" />;
   }
 
-  log("StacksLayout: subscriptionList:", subscriptionList);
-  // ✅ 3. POR ÚLTIMO: verifica subscription (dados já carregados)
-  if (!subscriptionList || subscriptionList.length === 0) {
+  // ✅ 3. subscriptionList === null significa que ainda não carregou
+  // subscriptionList === [] significa que carregou e está vazio
+  if (subscriptionList === null || subscriptionList.length === 0) {
     return <Redirect href="/(subscription)/newSubscription" />;
   }
 

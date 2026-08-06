@@ -400,7 +400,9 @@ type MySubscriptionsScreenProps = {
   reloadPageAfterPayment?: boolean;
 };
 
-export default function MySubscriptionsScreen({ reloadPageAfterPayment }: MySubscriptionsScreenProps) {
+export default function MySubscriptionsScreen({
+  reloadPageAfterPayment,
+}: MySubscriptionsScreenProps) {
   const router = useRouter();
   const { call } = useApi();
   const { t } = useTranslation();
@@ -582,6 +584,10 @@ export default function MySubscriptionsScreen({ reloadPageAfterPayment }: MySubs
         });
 
         loadSubscriptions();
+
+        if (reloadPageAfterPayment) {
+          router.replace("/(authenticated)");
+        }
       },
       catch: async (toast, error) => {
         toast.show({
@@ -704,11 +710,13 @@ export default function MySubscriptionsScreen({ reloadPageAfterPayment }: MySubs
                   text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS),
                 });
 
-                if(reloadPageAfterPayment){
-                  router.replace('/');
-                }
+                // ✅ Aguarda o Redux atualizar ANTES de navegar
+                await loadSubscriptions();
 
-                loadSubscriptions();
+                // ✅ Navega após Redux ter os dados atualizados
+                if (reloadPageAfterPayment) {
+                  router.replace("/(authenticated)");
+                }
               },
               catch: (toast, error) => {
                 toast.show({
