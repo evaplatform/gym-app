@@ -59,6 +59,8 @@ function RootLayoutNav() {
                 <Stack screenOptions={{ headerShown: false }}>
                   <Stack.Screen name="login" />
                   <Stack.Screen name="(authenticated)" />
+                  <Stack.Screen name="(subscription)/newSubscription" />
+                  <Stack.Screen name="(subscription)/subscriptionByUserDrawer" />
                 </Stack>
                 <StatusBar backgroundColor={colors.background} />
                 <Toast config={toastConfig} />

@@ -19,42 +19,42 @@ export default function HomeScreen() {
 
   const router = useRouter();
 
-  const getSubscriptionStatus = useCallback(
-    (subscriptionList: ISubscriptionByUserData[] | null) => {
-      if (user && user.isAdmin) {
-        return;
-      }
+  // const getSubscriptionStatus = useCallback(
+  //   (subscriptionList: ISubscriptionByUserData[] | null) => {
+  //     if (user && user.isAdmin) {
+  //       return;
+  //     }
 
-      if (isSubscriptionLoading || (!isInitialLoadingFinished && !subscriptionList)) {
-        return;
-      }
+  //     if (isSubscriptionLoading || (!isInitialLoadingFinished && !subscriptionList)) {
+  //       return;
+  //     }
 
-      if (!subscriptionList || subscriptionList.length === 0) {
-        return router.push(
-          "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
-        );
-      }
+  //     if (!subscriptionList || subscriptionList.length === 0) {
+  //       return router.push(
+  //         "/(authenticated)/(stacks)/(subscriptionStacks)/newSubscription/",
+  //       );
+  //     }
 
-      const hasActiveSubscription = subscriptionList.some((subscription) =>
-        [
-          SubscriptionsStatusEnum.ACTIVE,
-          SubscriptionsStatusEnum.TRIALING,
-        ].includes(subscription.status as SubscriptionsStatusEnum),
-      );
+  //     const hasActiveSubscription = subscriptionList.some((subscription) =>
+  //       [
+  //         SubscriptionsStatusEnum.ACTIVE,
+  //         SubscriptionsStatusEnum.TRIALING,
+  //       ].includes(subscription.status as SubscriptionsStatusEnum),
+  //     );
 
-      if (!hasActiveSubscription) {
-        router.push("(drawers)/subscriptionByUserDrawer");
-        return;
-      }
-    },
-    [router, user, isSubscriptionLoading, isInitialLoadingFinished],
-  );
+  //     if (!hasActiveSubscription) {
+  //       router.push("(drawers)/subscriptionByUserDrawer");
+  //       return;
+  //     }
+  //   },
+  //   [router, user, isSubscriptionLoading, isInitialLoadingFinished],
+  // );
 
-  useFocusEffect(
-    useCallback(() => {
-      getSubscriptionStatus(subscriptionList);
-    }, [getSubscriptionStatus, subscriptionList]),
-  );
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     getSubscriptionStatus(subscriptionList);
+  //   }, [getSubscriptionStatus, subscriptionList]),
+  // );
 
   return (
     <View style={styles.container}>

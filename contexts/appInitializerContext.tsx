@@ -46,7 +46,7 @@ type InitializeUserProps = {
   willFetchExerciseHistory?: boolean;
   willFetchGroups?: boolean;
   willFetchGpsValues?: boolean;
-  willFetchSubscription?: boolean;
+  // willFetchSubscription?: boolean;
 };
 
 interface AppInitContextType {
@@ -163,7 +163,7 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
       willFetchExerciseHistory = true,
       willFetchGroups = true,
       willFetchGpsValues = true,
-      willFetchSubscription = true,
+      // willFetchSubscription = true,
     }: InitializeUserProps) => {
       // Verificar se o banco de dados está realmente pronto
       setInitStatus("Verificando banco de dados...");
@@ -232,15 +232,15 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
                   log("[INIT]-Carregando valores de GPS...");
                   await dispatch(fetchGpsMetricsTemp({ dataBase }));
                 },
-              },
-              {
-                conditional: willFetchSubscription,
-                dispatch: async () => {
-                  setInitStatus("Carregando assinaturas...");
-                  log("[INIT]-Carregando assinaturas...");
-                  await dispatch(fetchSubscription());
-                },
-              },
+              }
+              // {
+              //   conditional: willFetchSubscription,
+              //   dispatch: async () => {
+              //     setInitStatus("Carregando assinaturas...");
+              //     log("[INIT]-Carregando assinaturas...");
+              //     await dispatch(fetchSubscription());
+              //   },
+              // },
             ];
 
             await executeDispatchListWithProgressbar(dispatchCalls, 40, 90);

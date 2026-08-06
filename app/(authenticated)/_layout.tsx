@@ -1,20 +1,27 @@
 import { AuthContext } from "@/contexts/authContext";
-import { useApi } from "@/hooks/useApi";
 import { Redirect, Stack } from "expo-router";
-import { useCallback, useContext, useEffect } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Platform } from "react-native";
 import * as ImagePicker from "expo-image-picker";
 import Toast from "react-native-toast-message";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { setLoginMessage } from "@/redux/slices/authSlice";
 import { SafeAreaView } from "react-native-safe-area-context";
 import useCustomStyle from "@/hooks/useCustomStyle";
+import { fetchSubscription } from "@/redux/actions/subscriptionActions";
+import { RootReduxState } from "@/redux";
+import { log } from "@/shared/utils/log";
+import { SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
 
 export default function StacksLayout() {
   const { colors } = useCustomStyle();
   const authState = useContext(AuthContext);
   const dispatch = useDispatch();
-  const { call } = useApi();
+  const { subscriptionList, loading: isSubscriptionLoading } = useSelector(
+    (state: RootReduxState) => state.subscription,
+  );
+
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const requestCameraPermission = useCallback(async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -35,30 +42,69 @@ export default function StacksLayout() {
   }, []);
 
   useEffect(() => {
-    if (Platform.OS === "web") {
-      return; // No need to request permissions on web
-    }
-
+    if (Platform.OS === "web") return;
     requestMediaLibraryPermission();
     requestCameraPermission();
   }, [requestCameraPermission, requestMediaLibraryPermission]);
 
-  if (!authState.isReady) {
-    return null; // or a loading spinner
-  }
+  useEffect(() => {
+    const load = async () => {
+      await dispatch(fetchSubscription());
+      setIsLoading(false); // ✅ só termina APÓS o fetch completar
+    };
+    load();
+  }, [dispatch]);
 
-  if (!authState.isLoggedIn) {
-    if (authState.loginMessage) {
+  useEffect(() => {
+    if (!authState.isLoggedIn && authState.loginMessage) {
       Toast.show({
         type: "info",
         text1: "atenção",
         text2: authState.loginMessage,
       });
-
       dispatch(setLoginMessage(undefined));
     }
+  }, [authState.isLoggedIn, authState.loginMessage, dispatch]);
 
+  // ✅ 1. PRIMEIRO: aguarda tudo carregar
+  log(
+    "authState:",
+    authState,
+    "isLoading:",
+    isLoading,
+    "isSubscriptionLoading:",
+    isSubscriptionLoading,
+  );
+  if (!authState.isReady || isLoading || isSubscriptionLoading) {
+    return null;
+  }
+
+  log(
+    "StacksLayout: authState.isLoggedIn:",
+    authState.isLoggedIn,
+    "subscriptionList:",
+    subscriptionList,
+  );
+  // ✅ 2. DEPOIS: verifica autenticação
+  if (!authState.isLoggedIn) {
     return <Redirect href="/login" />;
+  }
+
+  log("StacksLayout: subscriptionList:", subscriptionList);
+  // ✅ 3. POR ÚLTIMO: verifica subscription (dados já carregados)
+  if (!subscriptionList || subscriptionList.length === 0) {
+    return <Redirect href="/(subscription)/newSubscription" />;
+  }
+
+  if (
+    !subscriptionList.some((subscription) =>
+      [
+        SubscriptionsStatusEnum.ACTIVE,
+        SubscriptionsStatusEnum.TRIALING,
+      ].includes(subscription.status as SubscriptionsStatusEnum),
+    )
+  ) {
+    return <Redirect href="/(subscription)/subscriptionByUserDrawer" />;
   }
 
   return (

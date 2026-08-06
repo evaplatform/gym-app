@@ -235,7 +235,8 @@ function UpdateBillingDayModal({
                         { color: colors.gray600 },
                       ]}
                     >
-                      📅 {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE)}:
+                      📅 {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE)}
+                      :
                     </Text>
                     <Text
                       style={[
@@ -254,7 +255,8 @@ function UpdateBillingDayModal({
                         { color: colors.gray600 },
                       ]}
                     >
-                      ⏳ {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL)}:
+                      ⏳{" "}
+                      {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL)}:
                     </Text>
                     <Text
                       style={[
@@ -262,7 +264,8 @@ function UpdateBillingDayModal({
                         { color: colors.text },
                       ]}
                     >
-                      {preview.daysUntilBilling} {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS)}
+                      {preview.daysUntilBilling}{" "}
+                      {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS)}
                     </Text>
                   </View>
 
@@ -280,7 +283,8 @@ function UpdateBillingDayModal({
                         { color: colors.notification.info },
                       ]}
                     >
-                      ℹ️ {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION)}
+                      ℹ️{" "}
+                      {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION)}
                     </Text>
                   </View>
                 </>
@@ -392,7 +396,11 @@ const billingModalStyles = StyleSheet.create({
 // Tela principal
 // ─────────────────────────────────────────────
 
-export default function MySubscriptionsScreen() {
+type MySubscriptionsScreenProps = {
+  reloadPageAfterPayment?: boolean;
+};
+
+export default function MySubscriptionsScreen({ reloadPageAfterPayment }: MySubscriptionsScreenProps) {
   const router = useRouter();
   const { call } = useApi();
   const { t } = useTranslation();
@@ -400,7 +408,9 @@ export default function MySubscriptionsScreen() {
   const dispatch = useDispatch();
   const { colors } = useCustomStyle();
 
-  const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>([]);
+  const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>(
+    [],
+  );
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -456,7 +466,9 @@ export default function MySubscriptionsScreen() {
    * Extrai o dia de cobrança atual da subscription
    * Usa o current_period_end do primeiro item como referência
    */
-  const getCurrentBillingDay = (item: ISubscriptionByUserData): number | null => {
+  const getCurrentBillingDay = (
+    item: ISubscriptionByUserData,
+  ): number | null => {
     const firstItem = item.items?.data?.[0];
     if (!firstItem?.current_period_end) return null;
     const date = new Date(firstItem.current_period_end * 1000);
@@ -496,8 +508,9 @@ export default function MySubscriptionsScreen() {
     if (!user?.email) return;
 
     try {
-      const response =
-        await PaymentSubscriptionService.listSubscriptionsByUser(user.email);
+      const response = await PaymentSubscriptionService.listSubscriptionsByUser(
+        user.email,
+      );
 
       setSubscriptions(treatCanceledSubscription(response.subscriptions));
       dispatch(setSubscriptionListState(response.subscriptions));
@@ -552,7 +565,11 @@ export default function MySubscriptionsScreen() {
       try: async (toast) => {
         setLoading(true);
 
-        setUpdateCardModal({ visible: false, clientSecret: "", subscriptionId: "" });
+        setUpdateCardModal({
+          visible: false,
+          clientSecret: "",
+          subscriptionId: "",
+        });
 
         await PaymentSubscriptionService.updatePaymentMethod({
           subscriptionId: updateCardModal.subscriptionId,
@@ -578,7 +595,11 @@ export default function MySubscriptionsScreen() {
   };
 
   const handleCancelUpdateCard = () =>
-    setUpdateCardModal({ visible: false, clientSecret: "", subscriptionId: "" });
+    setUpdateCardModal({
+      visible: false,
+      clientSecret: "",
+      subscriptionId: "",
+    });
 
   // ── Handlers: dia de cobrança ────────────────
 
@@ -591,12 +612,20 @@ export default function MySubscriptionsScreen() {
   };
 
   const handleBillingDaySuccess = () => {
-    setBillingDayModal({ visible: false, subscriptionId: "", currentDay: null });
+    setBillingDayModal({
+      visible: false,
+      subscriptionId: "",
+      currentDay: null,
+    });
     loadSubscriptions();
   };
 
   const handleCancelBillingDay = () =>
-    setBillingDayModal({ visible: false, subscriptionId: "", currentDay: null });
+    setBillingDayModal({
+      visible: false,
+      subscriptionId: "",
+      currentDay: null,
+    });
 
   // ── Handlers: pagamento ──────────────────────
 
@@ -605,16 +634,19 @@ export default function MySubscriptionsScreen() {
       loading: true,
       try: async (toast) => {
         setLoading(true);
-        const result = await PaymentSubscriptionService.retryPayment(subscriptionId);
+        const result =
+          await PaymentSubscriptionService.retryPayment(subscriptionId);
 
         toast.show({
           type: result.status === "paid" ? "success" : "error",
-          text1: result.status === "paid"
-            ? t(AppMessagesEnum.SUCCESS)
-            : t(AppMessagesEnum.ATTENTION),
-          text2: result.status === "paid"
-            ? t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS)
-            : t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING),
+          text1:
+            result.status === "paid"
+              ? t(AppMessagesEnum.SUCCESS)
+              : t(AppMessagesEnum.ATTENTION),
+          text2:
+            result.status === "paid"
+              ? t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS)
+              : t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING),
         });
 
         loadSubscriptions();
@@ -623,7 +655,9 @@ export default function MySubscriptionsScreen() {
         toast.show({
           type: "error",
           text1: t(AppMessagesEnum.ERROR),
-          text2: error.message || t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT),
+          text2:
+            error.message ||
+            t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT),
         });
       },
       finally: () => setLoading(false),
@@ -636,7 +670,10 @@ export default function MySubscriptionsScreen() {
       t(AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION),
       [
         { text: t(AppMessagesEnum.CANCEL), style: "cancel" },
-        { text: t(AppMessagesEnum.TRY), onPress: () => retryPayment(subscriptionId) },
+        {
+          text: t(AppMessagesEnum.TRY),
+          onPress: () => retryPayment(subscriptionId),
+        },
       ],
     );
   };
@@ -666,6 +703,10 @@ export default function MySubscriptionsScreen() {
                   text1: t(AppMessagesEnum.SUCCESS),
                   text2: t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS),
                 });
+
+                if(reloadPageAfterPayment){
+                  router.replace('/');
+                }
 
                 loadSubscriptions();
               },
@@ -697,7 +738,9 @@ export default function MySubscriptionsScreen() {
             call({
               loading: true,
               try: async (toast) => {
-                await PaymentSubscriptionService.cancelSubscription(subscriptionId);
+                await PaymentSubscriptionService.cancelSubscription(
+                  subscriptionId,
+                );
 
                 toast.show({
                   type: "success",
@@ -731,7 +774,10 @@ export default function MySubscriptionsScreen() {
       emptyContainer: { backgroundColor: colors.backgroundSecondary },
       emptyTitle: { color: colors.gray700 },
       emptyText: { color: colors.gray700 },
-      card: { backgroundColor: colors.backgroundSecondary, shadowColor: colors.shadow },
+      card: {
+        backgroundColor: colors.backgroundSecondary,
+        shadowColor: colors.shadow,
+      },
       cardTitle: { color: colors.text },
       statusText: { color: colors.gray300 },
       priceText: { color: colors.tint },
@@ -871,7 +917,9 @@ export default function MySubscriptionsScreen() {
               <Text style={styles.infoLabel}>
                 ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL)}:
               </Text>
-              <Text style={[styles.infoValue, { color: colors.notification.warn }]}>
+              <Text
+                style={[styles.infoValue, { color: colors.notification.warn }]}
+              >
                 {formatDate(firstItem.current_period_end)}
               </Text>
             </View>
@@ -951,7 +999,12 @@ export default function MySubscriptionsScreen() {
               { backgroundColor: colors.notification.dangerBackground },
             ]}
           >
-            <Text style={[styles.warningText, { color: colors.notification.danger }]}>
+            <Text
+              style={[
+                styles.warningText,
+                { color: colors.notification.danger },
+              ]}
+            >
               ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_PAST_DUE_WARNING)}
             </Text>
           </View>
@@ -959,7 +1012,9 @@ export default function MySubscriptionsScreen() {
 
         {willCancel && firstItem && (
           <View style={[styles.warningBox, customStyle.warningBox]}>
-            <Text style={[styles.warningText, { color: colors.notification.warn }]}>
+            <Text
+              style={[styles.warningText, { color: colors.notification.warn }]}
+            >
               ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_WILL_CANCEL_WARNING)}{" "}
               {formatDate(firstItem.current_period_end)}
             </Text>
