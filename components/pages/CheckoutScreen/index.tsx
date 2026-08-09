@@ -16,7 +16,13 @@ import { useApi } from "@/hooks/useApi";
 import { useRouter } from "expo-router";
 import BillingDayPicker from "@/components/custom/BillingDayPicker";
 
-export default function CheckoutScreen() {
+type CheckoutScreenProps = {
+  reloadPageAfterPayment?: boolean;
+};
+
+export default function CheckoutScreen({
+  reloadPageAfterPayment,
+}: CheckoutScreenProps) {
   const router = useRouter();
   const { call } = useApi();
   const { t } = useTranslation();
@@ -162,6 +168,11 @@ export default function CheckoutScreen() {
 
         // 3. Atualizar Redux com a nova assinatura
         dispatch(setSubscriptionListState([subscription as any]));
+
+        // ✅ Navega após Redux ter os dados atualizados
+        if (reloadPageAfterPayment) {
+          router.replace("/(authenticated)");
+        }
 
         toast.show({
           type: "success",

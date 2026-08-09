@@ -16,6 +16,7 @@ import {
 } from "@/redux/slices/authSlice";
 import { resetAllUserDatabase } from "@/redux/actions/resetDatabaseActions";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { fetchSubscription } from "@/redux/actions/subscriptionActions"; // ✅ import
 
 SplashScreen.preventAutoHideAsync();
 
@@ -44,7 +45,6 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const router = useRouter();
   const dispatch = useDispatch();
 
-  // Obtenha o estado de autenticação do Redux
   const { isLoggedIn, isReady, loginMessage } = useSelector(
     (state: RootReduxState) => state.auth,
   );
@@ -54,6 +54,15 @@ export function AuthProvider({ children }: PropsWithChildren) {
     setAuthHeaders(data);
     try {
       await dispatch(loginUser(data)).unwrap();
+
+      // ✅ Passa o email diretamente pois user pode não estar no Redux ainda
+      await dispatch(
+        fetchSubscription({
+          ignoreCheckState: true,
+          email: data.email, // ← email vem do data do login
+        }),
+      );
+
       router.replace("/");
     } catch (error: any) {
       log("Error during login:", error);
@@ -72,14 +81,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
   const logOut = async () => {
     try {
       await clearStorage();
-
       dispatch(
         resetAllUserDatabase({ resetUser: true, fetchAll: false }),
       ).unwrap();
-
       dispatch(logoutUser()).unwrap();
       dispatch(setInitialLoadingFinished(false));
-
       router.replace("/login");
     } catch (error) {
       Alert.alert(
@@ -89,15 +95,11 @@ export function AuthProvider({ children }: PropsWithChildren) {
     }
   };
 
-
-
   const addCredentialIfItsLoggedIn = async (user: UserWithTokens) => {
     log("User found in local database:", user);
-
     setAuthHeaders(user);
     await dispatch(loginUser(user)).unwrap();
     dispatch(setReady(true));
-
     return;
   };
 

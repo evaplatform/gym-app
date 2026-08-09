@@ -36,7 +36,7 @@ import { TrainingByUserLocalService } from "@/database/services/TrainingByUserSe
 import { TrainingLocalService } from "@/database/services/TrainingLocalService";
 import { UserLocalService } from "@/database/services/UserLocalService";
 import { fetchSubscription } from "@/redux/actions/subscriptionActions";
-import { setInitialLoadingFinished } from "@/redux/slices/authSlice";
+import { setInitialLoadingFinished, setReady } from "@/redux/slices/authSlice";
 
 type InitializeUserProps = {
   willFetchUser?: boolean;
@@ -232,7 +232,7 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
                   log("[INIT]-Carregando valores de GPS...");
                   await dispatch(fetchGpsMetricsTemp({ dataBase }));
                 },
-              }
+              },
               // {
               //   conditional: willFetchSubscription,
               //   dispatch: async () => {
@@ -271,8 +271,11 @@ export const AppInitProvider: React.FC<AppInitProviderProps> = ({
         // Carregar usuário do banco de dados e definir credenciais
         const user = db?.userLocalService.getUser();
         if (user) {
-          addCredentialIfItsLoggedIn(user);
+          await addCredentialIfItsLoggedIn(user);
           dispatch(setInitialLoadingFinished(true));
+        } else {
+          // ✅ Sem usuário → marca como pronto para redirecionar ao login
+          dispatch(setReady(true));
         }
 
         log("[INIT]-Todas as inicializações concluídas com sucesso");

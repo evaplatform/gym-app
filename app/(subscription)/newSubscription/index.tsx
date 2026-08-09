@@ -7,7 +7,7 @@ export default function NewSubscription() {
   return (
     <StripeProvider publishableKey={PUBLISH_KEY}>
       <View style={[styles.container]}>
-        <CheckoutScreen />
+        <CheckoutScreen reloadPageAfterPayment />
       </View>
     </StripeProvider>
   );

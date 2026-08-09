@@ -10,7 +10,6 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import useCustomStyle from "@/hooks/useCustomStyle";
 import { fetchSubscription } from "@/redux/actions/subscriptionActions";
 import { RootReduxState } from "@/redux";
-import { log } from "@/shared/utils/log";
 import { SubscriptionsStatusEnum } from "@/shared/enum/SubscriptionsStatusEnum";
 
 export default function StacksLayout() {
@@ -21,7 +20,12 @@ export default function StacksLayout() {
     (state: RootReduxState) => state.subscription,
   );
 
-  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoading, setIsLoading] = useState<boolean>(
+    subscriptionList === null, // null = nunca buscou, [] = buscou e está vazio
+  );
+  const [subscriptionFetched, setSubscriptionFetched] = useState<boolean>(
+    subscriptionList !== null, // já foi buscado se não for null
+  );
 
   const requestCameraPermission = useCallback(async () => {
     const { status } = await ImagePicker.requestCameraPermissionsAsync();
@@ -48,12 +52,26 @@ export default function StacksLayout() {
   }, [requestCameraPermission, requestMediaLibraryPermission]);
 
   useEffect(() => {
+    if (!authState.isReady) return;
+
+    if (!authState.isLoggedIn) {
+      setIsLoading(false);
+      setSubscriptionFetched(false);
+      return;
+    }
+
+    if (subscriptionFetched) return;
+
     const load = async () => {
-      await dispatch(fetchSubscription());
-      setIsLoading(false); // ✅ só termina APÓS o fetch completar
+      try {
+        await dispatch(fetchSubscription());
+        setSubscriptionFetched(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
     load();
-  }, [dispatch]);
+  }, [dispatch, authState.isReady, authState.isLoggedIn, subscriptionFetched]);
 
   useEffect(() => {
     if (!authState.isLoggedIn && authState.loginMessage) {
@@ -66,22 +84,27 @@ export default function StacksLayout() {
     }
   }, [authState.isLoggedIn, authState.loginMessage, dispatch]);
 
-  // ✅ 1. PRIMEIRO: aguarda tudo carregar
-  if (!authState.isReady || isLoading || isSubscriptionLoading) {
+  // 1. Aguarda authContext inicializar
+  if (!authState.isReady) {
     return null;
   }
 
-  // ✅ 2. DEPOIS: verifica autenticação
+  // 2. Se não está logado, redireciona para login
   if (!authState.isLoggedIn) {
     return <Redirect href="/login" />;
   }
 
-  // ✅ 3. subscriptionList === null significa que ainda não carregou
-  // subscriptionList === [] significa que carregou e está vazio
-  if (subscriptionList === null || subscriptionList.length === 0) {
+  // 3. Aguarda subscription carregar
+  if (isLoading || isSubscriptionLoading) {
+    return null;
+  }
+
+  // 4. Sem subscription → nova subscription
+  if (!subscriptionList || subscriptionList.length === 0) {
     return <Redirect href="/(subscription)/newSubscription" />;
   }
 
+  // 5. Sem subscription ativa → gerenciar subscription
   if (
     !subscriptionList.some((subscription) =>
       [
