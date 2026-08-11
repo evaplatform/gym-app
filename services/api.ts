@@ -103,8 +103,8 @@ const put = async <Request, Response>(url: string, data: Request) => {
   return response.data;
 };
 
-const remove = async <Response>(url: string) => {
-  const response = await api.delete<Response>(url);
+const remove = async <Response, Request = any>(url: string, data?: Request) => {
+  const response = await api.delete<Response>(url, { data });
   return response.data;
 };
 const patch = async <Request, Response>(url: string, data: Request) => {

@@ -22,6 +22,7 @@ interface UpdateCardModalProps {
   clientSecret: string;
   onSuccess: (paymentMethodId: string) => void;
   onCancel: () => void;
+  setIsTestCard: (isTest: boolean) => void; // Adicione esta prop
 }
 
 export default function UpdateCardModal({
@@ -29,6 +30,7 @@ export default function UpdateCardModal({
   clientSecret,
   onSuccess,
   onCancel,
+  setIsTestCard
 }: UpdateCardModalProps) {
   const cardStyle = useCardFieldStyle();
   const { t } = useTranslation();
@@ -132,6 +134,15 @@ export default function UpdateCardModal({
               postalCodeEnabled={false}
               onCardChange={(cardDetails) => {
                 setCardComplete(cardDetails.complete);
+                if (
+                  cardDetails.last4 === "4242" ||
+                  cardDetails.last4 === "4343" ||
+                  cardDetails.last4 === "0002"
+                ) {
+                  setIsTestCard(true);
+                } else {
+                  setIsTestCard(false);
+                }
               }}
               style={{ height: 50 }}
               cardStyle={cardStyle}

@@ -102,7 +102,6 @@ module.exports = ({ config }) => {
           supportsPictureInPicture: true,
         },
       ],
-      // ❌ REMOVIDO: react-native-compressor
     ],
 
     extra: {
@@ -112,15 +111,25 @@ module.exports = ({ config }) => {
       eas: {
         projectId: "8936a338-308b-4704-96ed-0fc65405e242",
       },
+      NODE_ENV: process.env.NODE_ENV || "development",
+
       EXPO_PUBLIC_IOS_ID: process.env.EXPO_PUBLIC_IOS_ID,
       EXPO_PUBLIC_ANDROID_ID: process.env.EXPO_PUBLIC_ANDROID_ID_PROD,
       EXPO_PUBLIC_WEB_ID: process.env.EXPO_PUBLIC_WEB_ID,
       EXPO_PUBLIC_SECRET_KEY: process.env.EXPO_PUBLIC_SECRET_KEY,
       EXPO_PUBLIC_LOG: process.env.EXPO_PUBLIC_LOG || "true",
+
       GOOGLE_MAPS_API_KEY: process.env.EXPO_PUBLIC_GOOGLE_MAPS_API_KEY,
-      PUBLISH_KEY: process.env.PUBLISH_KEY,
-      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+
       PRICE_ID: process.env.PRICE_ID,
+      PRICE_ID_TEST: process.env.PRICE_ID_TEST,
+      PUBLISH_KEY: process.env.PUBLISH_KEY,
+      PUBLISH_KEY_TEST: process.env.PUBLISH_KEY_TEST,
+      STRIPE_SECRET_KEY: process.env.STRIPE_SECRET_KEY,
+      STRIPE_SECRET_KEY_TEST: process.env.STRIPE_SECRET_KEY_TEST,
+
+      EXPO_PUBLIC_BASE_URL_DEV: process.env.EXPO_PUBLIC_BASE_URL_DEV,
+      EXPO_PUBLIC_BASE_URL_PROD: process.env.EXPO_PUBLIC_BASE_URL_PROD,
     },
   };
 };

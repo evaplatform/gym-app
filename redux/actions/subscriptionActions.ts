@@ -7,7 +7,7 @@ import { ISubscriptionByUserData } from "@/services/PaymentSubscriptionServices/
 
 /**
  * @description the first parameter from  async (input: Input, { getState, rejectWithValue })
- */
+ */ 
 type Input = {
   ignoreCheckState?: boolean;
   email?: string; // ✅ novo parâmetro

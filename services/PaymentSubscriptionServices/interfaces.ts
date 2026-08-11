@@ -1,5 +1,6 @@
 export interface ISetupIntentRequest {
   email: string;
+  isTest?: boolean;
 }
 
 export interface ISetupIntentResponse {
@@ -13,6 +14,7 @@ export interface ICreateSubscriptionRequest {
   paymentMethodId: string;
   priceId: string;
   billingDay?: number;
+  isTest?: boolean;
 }
 
 export interface ICreateSubscriptionResponse {
@@ -293,6 +295,7 @@ export interface IReactivateSubscriptionRequest {
   customerId: string;
   priceId: string;
   paymentMethodId?: string;
+  isTest?: boolean;
 }
 
 export interface IBillingDayPreviewRequest {

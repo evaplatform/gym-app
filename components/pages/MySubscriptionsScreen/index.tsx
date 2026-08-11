@@ -14,7 +14,7 @@ import Text from "@/components/custom/Text";
 import { useDispatch, useSelector } from "react-redux";
 import { RootReduxState } from "@/redux";
 import { PaymentSubscriptionService } from "@/services/PaymentSubscriptionServices";
-import { PRICE_ID } from "@/shared/constants/envConstants";
+import { PRICE_ID, PRICE_ID_TEST } from "@/shared/constants/envConstants";
 import UpdateCardModal from "@/components/UpdateCardModal";
 import {
   getStatusText,
@@ -229,7 +229,8 @@ function UpdateBillingDayModal({
                         { color: colors.gray600 },
                       ]}
                     >
-                      📅 {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE)}:
+                      📅 {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NEXT_DATE)}
+                      :
                     </Text>
                     <Text
                       style={[
@@ -248,7 +249,8 @@ function UpdateBillingDayModal({
                         { color: colors.gray600 },
                       ]}
                     >
-                      ⏳ {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL)}:
+                      ⏳{" "}
+                      {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_DAYS_UNTIL)}:
                     </Text>
                     <Text
                       style={[
@@ -273,7 +275,8 @@ function UpdateBillingDayModal({
                         { color: colors.notification.info },
                       ]}
                     >
-                      ℹ️ {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION)}
+                      ℹ️{" "}
+                      {t(AppMessagesEnum.SUBSCRIPTION_BILLING_DAY_NO_PRORATION)}
                     </Text>
                   </View>
                 </>
@@ -340,7 +343,12 @@ const billingModalStyles = StyleSheet.create({
     alignItems: "center",
   },
   previewLabel: { fontSize: 13, flex: 1 },
-  previewValue: { fontSize: 13, fontWeight: "500", flex: 1, textAlign: "right" },
+  previewValue: {
+    fontSize: 13,
+    fontWeight: "500",
+    flex: 1,
+    textAlign: "right",
+  },
   infoBox: { padding: 10, borderRadius: 8, marginTop: 4 },
   infoText: { fontSize: 12 },
   actions: { gap: 10, marginTop: 4 },
@@ -364,7 +372,10 @@ export default function MySubscriptionsScreen({
   const dispatch = useDispatch();
   const { colors } = useCustomStyle();
 
-  const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>([]);
+  const [subscriptions, setSubscriptions] = useState<ISubscriptionByUserData[]>(
+    [],
+  );
+  const [isTestCard, setIsTestCard] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
 
@@ -407,7 +418,9 @@ export default function MySubscriptionsScreen({
     );
   };
 
-  const getCurrentBillingDay = (item: ISubscriptionByUserData): number | null => {
+  const getCurrentBillingDay = (
+    item: ISubscriptionByUserData,
+  ): number | null => {
     const firstItem = item.items?.data?.[0];
     if (!firstItem?.current_period_end) return null;
     const date = new Date(firstItem.current_period_end * 1000);
@@ -449,7 +462,8 @@ export default function MySubscriptionsScreen({
     if (!email) return;
 
     try {
-      const response = await PaymentSubscriptionService.listSubscriptionsByUser(email);
+      const response =
+        await PaymentSubscriptionService.listSubscriptionsByUser(email);
       setSubscriptions(treatCanceledSubscription(response.subscriptions));
       dispatch(setSubscriptionListState(response.subscriptions));
     } catch {
@@ -479,6 +493,7 @@ export default function MySubscriptionsScreen({
         setLoading(true);
         const setupResponse = await PaymentSubscriptionService.setupIntent({
           email: user?.email || "",
+          isTest: isTestCard,
         });
         setUpdateCardModal({
           visible: true,
@@ -502,7 +517,11 @@ export default function MySubscriptionsScreen({
       loading: true,
       try: async (toast) => {
         setLoading(true);
-        setUpdateCardModal({ visible: false, clientSecret: "", subscriptionId: "" });
+        setUpdateCardModal({
+          visible: false,
+          clientSecret: "",
+          subscriptionId: "",
+        });
 
         await PaymentSubscriptionService.updatePaymentMethod({
           subscriptionId: updateCardModal.subscriptionId,
@@ -532,7 +551,11 @@ export default function MySubscriptionsScreen({
   };
 
   const handleCancelUpdateCard = () =>
-    setUpdateCardModal({ visible: false, clientSecret: "", subscriptionId: "" });
+    setUpdateCardModal({
+      visible: false,
+      clientSecret: "",
+      subscriptionId: "",
+    });
 
   // ── Handlers: dia de cobrança ────────────────
 
@@ -545,12 +568,20 @@ export default function MySubscriptionsScreen({
   };
 
   const handleBillingDaySuccess = () => {
-    setBillingDayModal({ visible: false, subscriptionId: "", currentDay: null });
+    setBillingDayModal({
+      visible: false,
+      subscriptionId: "",
+      currentDay: null,
+    });
     loadSubscriptions();
   };
 
   const handleCancelBillingDay = () =>
-    setBillingDayModal({ visible: false, subscriptionId: "", currentDay: null });
+    setBillingDayModal({
+      visible: false,
+      subscriptionId: "",
+      currentDay: null,
+    });
 
   // ── Handlers: pagamento ──────────────────────
 
@@ -559,16 +590,19 @@ export default function MySubscriptionsScreen({
       loading: true,
       try: async (toast) => {
         setLoading(true);
-        const result = await PaymentSubscriptionService.retryPayment(subscriptionId);
+        const result =
+          await PaymentSubscriptionService.retryPayment(subscriptionId);
 
         toast.show({
           type: result.status === "paid" ? "success" : "error",
-          text1: result.status === "paid"
-            ? t(AppMessagesEnum.SUCCESS)
-            : t(AppMessagesEnum.ATTENTION),
-          text2: result.status === "paid"
-            ? t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS)
-            : t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING),
+          text1:
+            result.status === "paid"
+              ? t(AppMessagesEnum.SUCCESS)
+              : t(AppMessagesEnum.ATTENTION),
+          text2:
+            result.status === "paid"
+              ? t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_SUCCESS)
+              : t(AppMessagesEnum.SUBSCRIPTION_PAYMENT_PENDING),
         });
 
         loadSubscriptions();
@@ -577,7 +611,9 @@ export default function MySubscriptionsScreen({
         toast.show({
           type: "error",
           text1: t(AppMessagesEnum.ERROR),
-          text2: error.message || t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT),
+          text2:
+            error.message ||
+            t(AppMessagesEnum.SUBSCRIPTION_NOT_POSSIBLE_TO_PROCESS_PAYMENT),
         });
       },
       finally: () => setLoading(false),
@@ -590,12 +626,20 @@ export default function MySubscriptionsScreen({
       t(AppMessagesEnum.SUBSCRIPTION_RETRY_PAYMENT_DESCRIPTION),
       [
         { text: t(AppMessagesEnum.CANCEL), style: "cancel" },
-        { text: t(AppMessagesEnum.TRY), onPress: () => retryPayment(subscriptionId) },
+        {
+          text: t(AppMessagesEnum.TRY),
+          onPress: () => retryPayment(subscriptionId),
+        },
       ],
     );
   };
 
   const handleReactivate = (item: ISubscriptionByUserData) => {
+
+    const itemPriceId = item.items?.data?.[0]?.price?.id ?? "";
+    const isTest = itemPriceId === PRICE_ID_TEST;
+    const priceId = isTest ? PRICE_ID_TEST : PRICE_ID;
+
     Alert.alert(
       t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE_TITLE),
       t(AppMessagesEnum.SUBSCRIPTION_REACTIVATE_DESCRIPTION),
@@ -611,8 +655,9 @@ export default function MySubscriptionsScreen({
 
                 await PaymentSubscriptionService.reactivateSubscription({
                   customerId: item.customer,
-                  priceId: PRICE_ID,
+                  priceId,
                   paymentMethodId: item.default_payment_method?.id,
+                  isTest
                 });
 
                 toast.show({
@@ -655,7 +700,9 @@ export default function MySubscriptionsScreen({
             call({
               loading: true,
               try: async (toast) => {
-                await PaymentSubscriptionService.cancelSubscription(subscriptionId);
+                await PaymentSubscriptionService.cancelSubscription(
+                  subscriptionId,
+                );
 
                 toast.show({
                   type: "success",
@@ -689,7 +736,10 @@ export default function MySubscriptionsScreen({
       emptyContainer: { backgroundColor: colors.backgroundSecondary },
       emptyTitle: { color: colors.gray700 },
       emptyText: { color: colors.gray700 },
-      card: { backgroundColor: colors.backgroundSecondary, shadowColor: colors.shadow },
+      card: {
+        backgroundColor: colors.backgroundSecondary,
+        shadowColor: colors.shadow,
+      },
       cardTitle: { color: colors.text },
       statusText: { color: colors.gray300 },
       priceText: { color: colors.tint },
@@ -753,8 +803,16 @@ export default function MySubscriptionsScreen({
     const isCanceled = item.status === SubscriptionsStatusEnum.CANCELED;
 
     const priceInfo = price
-      ? { amount: price.unit_amount, currency: price.currency, interval: price.recurring.interval }
-      : { amount: plan.amount, currency: plan.currency, interval: plan.interval };
+      ? {
+          amount: price.unit_amount,
+          currency: price.currency,
+          interval: price.recurring.interval,
+        }
+      : {
+          amount: plan.amount,
+          currency: plan.currency,
+          interval: plan.interval,
+        };
 
     const currentBillingDay = getCurrentBillingDay(item);
 
@@ -796,7 +854,9 @@ export default function MySubscriptionsScreen({
         <View style={styles.infoSection}>
           {card && (
             <View style={styles.infoRow}>
-              <Text style={styles.infoLabel}>💳 {t(AppMessagesEnum.CARD)}:</Text>
+              <Text style={styles.infoLabel}>
+                💳 {t(AppMessagesEnum.CARD)}:
+              </Text>
               <Text style={styles.infoValue}>
                 •••• {card.last4} ({card.exp_month}/{card.exp_year})
               </Text>
@@ -837,7 +897,9 @@ export default function MySubscriptionsScreen({
               <Text style={styles.infoLabel}>
                 ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_VALID_UNTIL)}:
               </Text>
-              <Text style={[styles.infoValue, { color: colors.notification.warn }]}>
+              <Text
+                style={[styles.infoValue, { color: colors.notification.warn }]}
+              >
                 {formatDate(firstItem.current_period_end)}
               </Text>
             </View>
@@ -848,7 +910,9 @@ export default function MySubscriptionsScreen({
               <Text style={styles.infoLabel}>
                 ❌ {t(AppMessagesEnum.SUBSCRIPTION_CANCELED_AT)}:
               </Text>
-              <Text style={styles.infoValue}>{formatDate(item.canceled_at)}</Text>
+              <Text style={styles.infoValue}>
+                {formatDate(item.canceled_at)}
+              </Text>
             </View>
           )}
         </View>
@@ -906,7 +970,12 @@ export default function MySubscriptionsScreen({
               { backgroundColor: colors.notification.dangerBackground },
             ]}
           >
-            <Text style={[styles.warningText, { color: colors.notification.danger }]}>
+            <Text
+              style={[
+                styles.warningText,
+                { color: colors.notification.danger },
+              ]}
+            >
               ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_PAST_DUE_WARNING)}
             </Text>
           </View>
@@ -914,7 +983,9 @@ export default function MySubscriptionsScreen({
 
         {willCancel && firstItem && (
           <View style={[styles.warningBox, customStyle.warningBox]}>
-            <Text style={[styles.warningText, { color: colors.notification.warn }]}>
+            <Text
+              style={[styles.warningText, { color: colors.notification.warn }]}
+            >
               ⚠️ {t(AppMessagesEnum.SUBSCRIPTION_WILL_CANCEL_WARNING)}{" "}
               {formatDate(firstItem.current_period_end)}
             </Text>
@@ -950,6 +1021,7 @@ export default function MySubscriptionsScreen({
         clientSecret={updateCardModal.clientSecret}
         onSuccess={handleCardConfirmed}
         onCancel={handleCancelUpdateCard}
+        setIsTestCard={setIsTestCard}
       />
 
       <UpdateBillingDayModal
@@ -957,7 +1029,7 @@ export default function MySubscriptionsScreen({
         subscriptionId={billingDayModal.subscriptionId}
         currentDay={billingDayModal.currentDay}
         email={user?.email || ""}
-        priceId={PRICE_ID}
+        priceId={isTestCard ? PRICE_ID_TEST : PRICE_ID}
         onSuccess={handleBillingDaySuccess}
         onCancel={handleCancelBillingDay}
       />
@@ -1019,6 +1091,11 @@ const styles = StyleSheet.create({
   infoLabel: { fontSize: 14, flex: 1 },
   infoValue: { fontSize: 14, fontWeight: "500", flex: 1, textAlign: "right" },
   actionsContainer: { gap: 10, marginTop: 15, marginBottom: 15 },
-  warningBox: { padding: 12, borderRadius: 8, borderLeftWidth: 4, marginTop: 10 },
+  warningBox: {
+    padding: 12,
+    borderRadius: 8,
+    borderLeftWidth: 4,
+    marginTop: 10,
+  },
   warningText: { fontSize: 13 },
 });

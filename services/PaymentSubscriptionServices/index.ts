@@ -28,14 +28,17 @@ export class PaymentSubscriptionService {
     );
   }
 
-  static async listSubscriptionsByUser(email: string) {
+  static async listSubscriptionsByUser(email: string, isTest: boolean = false) {
     return get<ISubscriptionByUserResponse>(
-      "/payment-subscription?email=" + email,
+      `/payment-subscription?email=${email}&isTest=${isTest}`,
     );
   }
 
-  static async cancelSubscription(subscriptionId: string) {
-    return remove(`/payment-subscription/${subscriptionId}`);
+  static async cancelSubscription(
+    subscriptionId: string,
+    isTest: boolean = false,
+  ) {
+    return remove(`/payment-subscription/${subscriptionId}`, { isTest });
   }
 
   static async updatePaymentMethod(body: IUpdatePaymentMethodRequest) {

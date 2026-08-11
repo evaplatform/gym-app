@@ -38,7 +38,7 @@ export default function BillingDayPicker({
   const [loadingPreview, setLoadingPreview] = useState(false);
 
   const fetchPreview = useCallback(
-    async (day: number) => {
+  async (day: number) => {
       if (!email || !priceId) return;
 
       try {
